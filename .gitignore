@@ -12,3 +12,4 @@
 
 *.lock
 src/dxgi1_2.h
+src/dxgi.h
