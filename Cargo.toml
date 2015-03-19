@@ -1,0 +1,10 @@
+[package]
+
+name = "dxgi"
+version = "0.0.1"
+authors = ["bryal <96.bryal@gmail.com>"]
+
+build = "build.rs"
+
+[dependencies]
+winapi = "*"
