@@ -26,18 +26,8 @@ extern crate libc;
 extern crate winapi;
 
 use libc::c_void;
-// use winapi::{ REFIID };//, GUID };
+use winapi::{ REFIID, GUID, HRESULT };
 
-type HResult = u32;
-
-#[repr(C)]
-struct GUID {
-	Data1: u32,
-	Data2: u16,
-	Data3: u16,
-	Data4: [u8; 8],
-}
-type REFIID = *const GUID;
 
 macro_rules! define_guid {
 	($name:ident, $d1:expr, $d2:expr, $d3:expr, $d4:expr) => {
@@ -49,14 +39,11 @@ macro_rules! define_guid {
 // DEFINE_GUID(IID_IDXGIFactory1,0x770aae78,0xf26f,0x4dba,0xa8,0x29,0x25,0x3c,0x83,0xd1,0xb3,0x87);
 define_guid!(IID_IDXGIFactory1,0x770aae78,0xf26f,0x4dba,[0xa8,0x29,0x25,0x3c,0x83,0xd1,0xb3,0x87]);
 
-// DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8)
-// static IID_IDXGIFactory1: GUID = githgitGUID{ Data1: l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } };
-
 #[link(name="dxgi")]
 extern "C" {
 	#![allow(dead_code)]
 
-	fn CreateDXGIFactory1(riid: REFIID, ppFactory: *mut *mut c_void) -> HResult;
+	fn CreateDXGIFactory1(riid: REFIID, ppFactory: *mut *mut c_void) -> HRESULT;
 }
 
 #[test]
