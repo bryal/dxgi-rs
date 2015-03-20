@@ -26,6 +26,8 @@
 //! [DXGI Interfaces, MSDN]
 //! (https://msdn.microsoft.com/en-us/library/windows/desktop/ff471322(v=vs.85).aspx)
 
+#![allow(non_snake_case, dead_code)]
+
 use libc::{ c_void };
 use winapi::{ HRESULT, ULONG, REFGUID,
 	UINT, IUnknown, REFIID,

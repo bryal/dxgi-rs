@@ -25,6 +25,8 @@
 //! # References
 //! [DXGI Enumerations, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471320(v=vs.85).aspx)
 
+#![allow(non_snake_case, dead_code)]
+
 #[repr(C)] pub enum DXGI_ADAPTER_FLAG {
 	DXGI_ADAPTER_FLAG_NONE = 0,
 	DXGI_ADAPTER_FLAG_REMOTE = 1,

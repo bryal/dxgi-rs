@@ -25,6 +25,8 @@
 //! # References
 //! [DXGI Structures, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471323(v=vs.85).aspx)
 
+#![allow(non_snake_case, dead_code, non_camel_case_types)]
+
 use winapi::{ WCHAR, UINT, SIZE_T,
 	LUID, LARGE_INTEGER, BOOL,
 	FLOAT, RECT, HMONITOR,

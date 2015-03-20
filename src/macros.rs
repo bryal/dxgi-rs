@@ -33,7 +33,6 @@
 /// Rust equivalent to windows C DEFINE_GUID macro
 macro_rules! define_guid {
 	($name:ident, $d1:expr, $d2:expr, $d3:expr, $d4:expr) => {
-		#[allow(non_upper_case_globals, dead_code)]
 		pub static $name: GUID = GUID{ Data1: $d1, Data2: $d2, Data3: $d3, Data4: $d4 };
 	}
 }
