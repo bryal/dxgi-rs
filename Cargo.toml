@@ -6,7 +6,7 @@ authors = ["bryal <96.bryal@gmail.com>"]
 description = "FFI bindings to DXGI"
 repository = "https://github.com/bryal/dxgi-rs"
 readme = "README.md"
-keywords = "Windows, DXGI, Direct3D, FFI"
+keywords = ["Windows", "DXGI", "Direct3D", "FFI"]
 license = "MIT"
 build = "build.rs"
 

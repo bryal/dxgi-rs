@@ -34,7 +34,7 @@ pub use dxgi_interfaces::*;
 pub use dxgi_structures::*;
 pub use dxgi_constants::*;
 
-pub mod macros;
+mod macros;
 pub mod dxgi_structures;
 pub mod dxgi_enumerations;
 pub mod dxgi_constants;

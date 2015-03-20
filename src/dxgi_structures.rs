@@ -40,250 +40,250 @@ use dxgi_enumerations::*;
 pub type DXGI_INFO_QUEUE_MESSAGE_ID = c_int;
 
 #[repr(C)] pub struct DXGI_ADAPTER_DESC {
-	Description: [WCHAR; 128],
-	VendorId: UINT,
-	DeviceId: UINT,
-	SubSysId: UINT,
-	Revision: UINT,
-	DedicatedVideoMemory: SIZE_T,
-	DedicatedSystemMemory: SIZE_T,
-	SharedSystemMemory: SIZE_T,
-	AdapterLuid: LUID,
+	pub Description: [WCHAR; 128],
+	pub VendorId: UINT,
+	pub DeviceId: UINT,
+	pub SubSysId: UINT,
+	pub Revision: UINT,
+	pub DedicatedVideoMemory: SIZE_T,
+	pub DedicatedSystemMemory: SIZE_T,
+	pub SharedSystemMemory: SIZE_T,
+	pub AdapterLuid: LUID,
 }
 
 #[repr(C)] pub struct DXGI_ADAPTER_DESC1 {
-	Description: [WCHAR; 128],
-	VendorId: UINT,
-	DeviceId: UINT,
-	SubSysId: UINT,
-	Revision: UINT,
-	DedicatedVideoMemory: SIZE_T,
-	DedicatedSystemMemory: SIZE_T,
-	SharedSystemMemory: SIZE_T,
-	AdapterLuid: LUID,
-	Flags: UINT,
+	pub Description: [WCHAR; 128],
+	pub VendorId: UINT,
+	pub DeviceId: UINT,
+	pub SubSysId: UINT,
+	pub Revision: UINT,
+	pub DedicatedVideoMemory: SIZE_T,
+	pub DedicatedSystemMemory: SIZE_T,
+	pub SharedSystemMemory: SIZE_T,
+	pub AdapterLuid: LUID,
+	pub Flags: UINT,
 }
 
 #[repr(C)] pub struct DXGI_ADAPTER_DESC2 {
-	Description: [WCHAR; 128],
-	VendorId: UINT,
-	DeviceId: UINT,
-	SubSysId: UINT,
-	Revision: UINT,
-	DedicatedVideoMemory: SIZE_T,
-	DedicatedSystemMemory: SIZE_T,
-	SharedSystemMemory: SIZE_T,
-	AdapterLuid: LUID,
-	Flags: UINT,
-	GraphicsPreemptionGranularity: DXGI_GRAPHICS_PREEMPTION_GRANULARITY,
-	ComputePreemptionGranularity: DXGI_COMPUTE_PREEMPTION_GRANULARITY,
+	pub Description: [WCHAR; 128],
+	pub VendorId: UINT,
+	pub DeviceId: UINT,
+	pub SubSysId: UINT,
+	pub Revision: UINT,
+	pub DedicatedVideoMemory: SIZE_T,
+	pub DedicatedSystemMemory: SIZE_T,
+	pub SharedSystemMemory: SIZE_T,
+	pub AdapterLuid: LUID,
+	pub Flags: UINT,
+	pub GraphicsPreemptionGranularity: DXGI_GRAPHICS_PREEMPTION_GRANULARITY,
+	pub ComputePreemptionGranularity: DXGI_COMPUTE_PREEMPTION_GRANULARITY,
 }
 
 #[repr(C)] pub struct DXGI_DECODE_SWAP_CHAIN_DESC {
-	Flags: UINT,
+	pub Flags: UINT,
 }
 
 #[repr(C)] pub struct DXGI_FRAME_STATISTICS {
-	PresentCount: UINT,
-	PresentRefreshCount: UINT,
-	SyncRefreshCount: UINT,
-	SyncQPCTime: LARGE_INTEGER,
-	SyncGPUTime: LARGE_INTEGER,
+	pub PresentCount: UINT,
+	pub PresentRefreshCount: UINT,
+	pub SyncRefreshCount: UINT,
+	pub SyncQPCTime: LARGE_INTEGER,
+	pub SyncGPUTime: LARGE_INTEGER,
 }
 
 #[repr(C)] pub struct DXGI_FRAME_STATISTICS_MEDIA {
-	PresentCount: UINT,
-	PresentRefreshCount: UINT,
-	SyncRefreshCount: UINT,
-	SyncQPCTime: LARGE_INTEGER,
-	SyncGPUTime: LARGE_INTEGER,
-
-	CompositionMode: DXGI_FRAME_PRESENTATION_MODE,
-	ApprovedPresentDuration: UINT,
+	pub PresentCount: UINT,
+	pub PresentRefreshCount: UINT,
+	pub SyncRefreshCount: UINT,
+	pub SyncQPCTime: LARGE_INTEGER,
+	pub SyncGPUTime: LARGE_INTEGER,
+pub 
+	pub CompositionMode: DXGI_FRAME_PRESENTATION_MODE,
+	pub ApprovedPresentDuration: UINT,
 }
 
 #[repr(C)] pub struct DXGI_GAMMA_CONTROL {
-	Scale: DXGI_RGB,
-	Offset: DXGI_RGB,
-	GammaCurve: [DXGI_RGB; 1025],
+	pub Scale: DXGI_RGB,
+	pub Offset: DXGI_RGB,
+	pub GammaCurve: [DXGI_RGB; 1025],
 }
 
 #[repr(C)] pub struct DXGI_GAMMA_CONTROL_CAPABILITIES {
-	ScaleAndOffsetSupported: BOOL,
-	MaxConvertedValue: c_float,
-	MinConvertedValue: c_float,
-	NumGammaControlPoints: UINT,
-	ControlPointPositions: [c_float; 1025],
+	pub ScaleAndOffsetSupported: BOOL,
+	pub MaxConvertedValue: c_float,
+	pub MinConvertedValue: c_float,
+	pub NumGammaControlPoints: UINT,
+	pub ControlPointPositions: [c_float; 1025],
 }
 
 #[repr(C)] pub struct DXGI_INFO_QUEUE_FILTER {
-	AllowList: DXGI_INFO_QUEUE_FILTER_DESC,
-	DenyList: DXGI_INFO_QUEUE_FILTER_DESC,
+	pub AllowList: DXGI_INFO_QUEUE_FILTER_DESC,
+	pub DenyList: DXGI_INFO_QUEUE_FILTER_DESC,
 }
 
 #[repr(C)] pub struct DXGI_INFO_QUEUE_FILTER_DESC {
-	NumCategories: UINT,
-	pCategoryList: DXGI_INFO_QUEUE_MESSAGE_CATEGORY,
-	NumSeverities: UINT,
-	pSeverityList: DXGI_INFO_QUEUE_MESSAGE_SEVERITY,
-	NumIDs: UINT,
-	pIDList: DXGI_INFO_QUEUE_MESSAGE_ID,
+	pub NumCategories: UINT,
+	pub pCategoryList: DXGI_INFO_QUEUE_MESSAGE_CATEGORY,
+	pub NumSeverities: UINT,
+	pub pSeverityList: DXGI_INFO_QUEUE_MESSAGE_SEVERITY,
+	pub NumIDs: UINT,
+	pub pIDList: DXGI_INFO_QUEUE_MESSAGE_ID,
 }
 
 #[repr(C)] pub struct DXGI_INFO_QUEUE_MESSAGE {
-	Producer: DXGI_DEBUG_ID,
-	Category: DXGI_INFO_QUEUE_MESSAGE_CATEGORY,
-	Severity: DXGI_INFO_QUEUE_MESSAGE_SEVERITY,
-	ID: DXGI_INFO_QUEUE_MESSAGE_ID,
-	pDescription: *const c_char,
-	DescriptionByteLength: SIZE_T,
+	pub Producer: DXGI_DEBUG_ID,
+	pub Category: DXGI_INFO_QUEUE_MESSAGE_CATEGORY,
+	pub Severity: DXGI_INFO_QUEUE_MESSAGE_SEVERITY,
+	pub ID: DXGI_INFO_QUEUE_MESSAGE_ID,
+	pub pDescription: *const c_char,
+	pub DescriptionByteLength: SIZE_T,
 }
 
 #[repr(C)] pub struct DXGI_MATRIX_3X2_F {
-	_11: FLOAT,
-	_12: FLOAT,
-	_21: FLOAT,
-	_22: FLOAT,
-	_31: FLOAT,
-	_32: FLOAT,
+	pub _11: FLOAT,
+	pub _12: FLOAT,
+	pub _21: FLOAT,
+	pub _22: FLOAT,
+	pub _31: FLOAT,
+	pub _32: FLOAT,
 }
 
 #[repr(C)] pub struct DXGI_MAPPED_RECT {
-	Pitch: INT,
-	pBits: BYTE,
+	pub Pitch: INT,
+	pub pBits: BYTE,
 }
 
 #[repr(C)] pub struct DXGI_MODE_DESC {
-	Width: UINT,
-	Height: UINT,
-	RefreshRate: DXGI_RATIONAL,
-	Format: DXGI_FORMAT,
-	ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER,
-	Scaling: DXGI_MODE_SCALING,
+	pub Width: UINT,
+	pub Height: UINT,
+	pub RefreshRate: DXGI_RATIONAL,
+	pub Format: DXGI_FORMAT,
+	pub ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER,
+	pub Scaling: DXGI_MODE_SCALING,
 }
 
 #[repr(C)] pub struct DXGI_MODE_DESC1 {
-	Width: UINT,
-	Height: UINT,
-	RefreshRate: DXGI_RATIONAL,
-	Format: DXGI_FORMAT,
-	ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER,
-	Scaling: DXGI_MODE_SCALING,
-	Stereo: BOOL,
+	pub Width: UINT,
+	pub Height: UINT,
+	pub RefreshRate: DXGI_RATIONAL,
+	pub Format: DXGI_FORMAT,
+	pub ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER,
+	pub Scaling: DXGI_MODE_SCALING,
+	pub Stereo: BOOL,
 }
 
 #[repr(C)] pub struct DXGI_OUTPUT_DESC {
-	DeviceName: [WCHAR; 32],
-	DesktopCoordinates: RECT,
-	AttachedToDesktop: BOOL,
-	Rotation: DXGI_MODE_ROTATION,
-	Monitor: HMONITOR,
+	pub DeviceName: [WCHAR; 32],
+	pub DesktopCoordinates: RECT,
+	pub AttachedToDesktop: BOOL,
+	pub Rotation: DXGI_MODE_ROTATION,
+	pub Monitor: HMONITOR,
 }
 
 #[repr(C)] pub struct DXGI_OUTDUPL_DESC {
-	ModeDesc: DXGI_MODE_DESC,
-	Rotation: DXGI_MODE_ROTATION,
-	DesktopImageInSystemMemory: BOOL,
+	pub ModeDesc: DXGI_MODE_DESC,
+	pub Rotation: DXGI_MODE_ROTATION,
+	pub DesktopImageInSystemMemory: BOOL,
 }
 
 #[repr(C)] pub struct DXGI_OUTDUPL_FRAME_INFO {
-	LastPresentTime: LARGE_INTEGER,
-	LastMouseUpdateTime: LARGE_INTEGER,
-	AccumulatedFrames: UINT,
-	RectsCoalesced: BOOL,
-	ProtectedContentMaskedOut: BOOL,
-	PointerPosition: DXGI_OUTDUPL_POINTER_POSITION,
-	TotalMetadataBufferSize: UINT,
-	PointerShapeBufferSize: UINT,
+	pub LastPresentTime: LARGE_INTEGER,
+	pub LastMouseUpdateTime: LARGE_INTEGER,
+	pub AccumulatedFrames: UINT,
+	pub RectsCoalesced: BOOL,
+	pub ProtectedContentMaskedOut: BOOL,
+	pub PointerPosition: DXGI_OUTDUPL_POINTER_POSITION,
+	pub TotalMetadataBufferSize: UINT,
+	pub PointerShapeBufferSize: UINT,
 }
 
 #[repr(C)] pub struct DXGI_OUTDUPL_MOVE_RECT {
-	SourcePoint: POINT,
-	DestinationRect: RECT,
+	pub SourcePoint: POINT,
+	pub DestinationRect: RECT,
 }
 
 #[repr(C)] pub struct DXGI_OUTDUPL_POINTER_POSITION {
-	Position: POINT,
-	Visible: BOOL,
+	pub Position: POINT,
+	pub Visible: BOOL,
 }
 
 #[repr(C)] pub struct DXGI_OUTDUPL_POINTER_SHAPE_INFO {
-	Type: UINT,
-	Width: UINT,
-	Height: UINT,
-	Pitch: UINT,
-	HotSpot: POINT,
+	pub Type: UINT,
+	pub Width: UINT,
+	pub Height: UINT,
+	pub Pitch: UINT,
+	pub HotSpot: POINT,
 }
 
 #[repr(C)] pub struct DXGI_PRESENT_PARAMETERS {
-	DirtyRectsCount: UINT,
-	pDirtyRects: RECT,
-	pScrollRect: RECT,
-	pScrollOffset: POINT,
+	pub DirtyRectsCount: UINT,
+	pub pDirtyRects: RECT,
+	pub pScrollRect: RECT,
+	pub pScrollOffset: POINT,
 }
 
 #[repr(C)] pub struct DXGI_RATIONAL {
-	Numerator: UINT,
-	Denominator: UINT,
+	pub Numerator: UINT,
+	pub Denominator: UINT,
 }
 
 #[repr(C)] pub struct DXGI_RGB {
-	Red: c_float,
-	Green: c_float,
-	Blue: c_float,
+	pub Red: c_float,
+	pub Green: c_float,
+	pub Blue: c_float,
 }
 
 #[repr(C)] pub struct DXGI_RGBA {
-	r: c_float,
-	g: c_float,
-	b: c_float,
-	a: c_float,
+	pub r: c_float,
+	pub g: c_float,
+	pub b: c_float,
+	pub a: c_float,
 }
 
 #[repr(C)] pub struct DXGI_SAMPLE_DESC {
-	Count: UINT,
-	Quality: UINT,
+	pub Count: UINT,
+	pub Quality: UINT,
 }
 
 #[repr(C)] pub struct DXGI_SHARED_RESOURCE {
-	Handle: HANDLE,
+	pub Handle: HANDLE,
 }
 
 #[repr(C)] pub struct DXGI_SURFACE_DESC {
-	Width: UINT,
-	Height: UINT,
-	Format: DXGI_FORMAT,
-	SampleDesc: DXGI_SAMPLE_DESC,
+	pub Width: UINT,
+	pub Height: UINT,
+	pub Format: DXGI_FORMAT,
+	pub SampleDesc: DXGI_SAMPLE_DESC,
 }
 
 #[repr(C)] pub struct DXGI_SWAP_CHAIN_DESC {
-	BufferDesc: DXGI_MODE_DESC,
-	SampleDesc: DXGI_SAMPLE_DESC,
-	BufferUsage: DXGI_USAGE,
-	BufferCount: UINT,
-	OutputWindow: HWND,
-	Windowed: BOOL,
-	SwapEffect: DXGI_SWAP_EFFECT,
-	Flags: UINT,
+	pub BufferDesc: DXGI_MODE_DESC,
+	pub SampleDesc: DXGI_SAMPLE_DESC,
+	pub BufferUsage: DXGI_USAGE,
+	pub BufferCount: UINT,
+	pub OutputWindow: HWND,
+	pub Windowed: BOOL,
+	pub SwapEffect: DXGI_SWAP_EFFECT,
+	pub Flags: UINT,
 }
 
 #[repr(C)] pub struct DXGI_SWAP_CHAIN_DESC1 {
-	Width: UINT,
-	Height: UINT,
-	Format: DXGI_FORMAT,
-	Stereo: BOOL,
-	SampleDesc: DXGI_SAMPLE_DESC,
-	BufferUsage: DXGI_USAGE,
-	BufferCount: UINT,
-	Scaling: DXGI_SCALING,
-	SwapEffect: DXGI_SWAP_EFFECT,
-	AlphaMode: DXGI_ALPHA_MODE,
-	Flags: UINT,
+	pub Width: UINT,
+	pub Height: UINT,
+	pub Format: DXGI_FORMAT,
+	pub Stereo: BOOL,
+	pub SampleDesc: DXGI_SAMPLE_DESC,
+	pub BufferUsage: DXGI_USAGE,
+	pub BufferCount: UINT,
+	pub Scaling: DXGI_SCALING,
+	pub SwapEffect: DXGI_SWAP_EFFECT,
+	pub AlphaMode: DXGI_ALPHA_MODE,
+	pub Flags: UINT,
 }
 
 #[repr(C)] pub struct DXGI_SWAP_CHAIN_FULLSCREEN_DESC {
-	RefreshRate: DXGI_RATIONAL,
-	ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER,
-	Scaling: DXGI_MODE_SCALING,
-	Windowed: BOOL,
+	pub RefreshRate: DXGI_RATIONAL,
+	pub ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER,
+	pub Scaling: DXGI_MODE_SCALING,
+	pub Windowed: BOOL,
 }
