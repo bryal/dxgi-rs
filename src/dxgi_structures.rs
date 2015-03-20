@@ -21,6 +21,9 @@
 // THE SOFTWARE.
 
 //! Structures provided by DXGI. Structures are from DXGI 1.0, 1.1, and 1.2
+//!
+//! # References
+//! [DXGI Structures, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471323(v=vs.85).aspx)
 
 use winapi::{ WCHAR, UINT, SIZE_T, LUID, LARGE_INTEGER,
 	BOOL, FLOAT, RECT, HMONITOR, POINT, HANDLE };
