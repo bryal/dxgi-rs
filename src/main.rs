@@ -32,9 +32,10 @@ use winapi::{ REFIID, REFGUID, GUID,
 	WCHAR, LUID, HWND, BOOL};
 use dxgi_structures::*;
 
-use ffi_vtable::c_vtable;
+mod macros;
+mod dxgi_structures;
+mod dxgi_constants;
 
-mod ffi_vtable;
 
 define_guid!(IID_IDXGIObject,
 	0xaec22fb8, 0x76f3, 0x4639, [0x9b, 0xe0, 0x28, 0xeb, 0x43, 0xa6, 0x7a, 0x2e]);
