@@ -25,11 +25,17 @@
 //! # References
 //! [DXGI Structures, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471323(v=vs.85).aspx)
 
-use winapi::{ WCHAR, UINT, SIZE_T, LUID, LARGE_INTEGER,
-	BOOL, FLOAT, RECT, HMONITOR, POINT, HANDLE };
-use libc::{ c_char, c_float };
+use winapi::{ WCHAR, UINT, SIZE_T,
+	LUID, LARGE_INTEGER, BOOL,
+	FLOAT, RECT, HMONITOR,
+	POINT, HANDLE, INT,
+	BYTE, HWND };
+use libc::{ c_char, c_float, c_int };
 
 use dxgi_constants::*;
+use dxgi_enumerations::*;
+
+pub type DXGI_INFO_QUEUE_MESSAGE_ID = c_int;
 
 #[repr(C)] pub struct DXGI_ADAPTER_DESC {
 	Description: [WCHAR; 128],
@@ -120,7 +126,7 @@ use dxgi_constants::*;
 	DescriptionByteLength: SIZE_T,
 }
 
-#[repr(C)] pub struct _DXGI_MATRIX_3X2_F {
+#[repr(C)] pub struct DXGI_MATRIX_3X2_F {
 	_11: FLOAT,
 	_12: FLOAT,
 	_21: FLOAT,
@@ -143,7 +149,7 @@ use dxgi_constants::*;
 	Scaling: DXGI_MODE_SCALING,
 }
 
-#[repr(C)] pub struct _DXGI_MODE_DESC1 {
+#[repr(C)] pub struct DXGI_MODE_DESC1 {
 	Width: UINT,
 	Height: UINT,
 	RefreshRate: DXGI_RATIONAL,
@@ -161,13 +167,13 @@ use dxgi_constants::*;
 	Monitor: HMONITOR,
 }
 
-#[repr(C)] pub struct _DXGI_OUTDUPL_DESC {
+#[repr(C)] pub struct DXGI_OUTDUPL_DESC {
 	ModeDesc: DXGI_MODE_DESC,
 	Rotation: DXGI_MODE_ROTATION,
 	DesktopImageInSystemMemory: BOOL,
 }
 
-#[repr(C)] pub struct _DXGI_OUTDUPL_FRAME_INFO {
+#[repr(C)] pub struct DXGI_OUTDUPL_FRAME_INFO {
 	LastPresentTime: LARGE_INTEGER,
 	LastMouseUpdateTime: LARGE_INTEGER,
 	AccumulatedFrames: UINT,
@@ -178,17 +184,17 @@ use dxgi_constants::*;
 	PointerShapeBufferSize: UINT,
 }
 
-#[repr(C)] pub struct _DXGI_OUTDUPL_MOVE_RECT {
+#[repr(C)] pub struct DXGI_OUTDUPL_MOVE_RECT {
 	SourcePoint: POINT,
 	DestinationRect: RECT,
 }
 
-#[repr(C)] pub struct _DXGI_OUTDUPL_POINTER_POSITION {
+#[repr(C)] pub struct DXGI_OUTDUPL_POINTER_POSITION {
 	Position: POINT,
 	Visible: BOOL,
 }
 
-#[repr(C)] pub struct _DXGI_OUTDUPL_POINTER_SHAPE_INFO {
+#[repr(C)] pub struct DXGI_OUTDUPL_POINTER_SHAPE_INFO {
 	Type: UINT,
 	Width: UINT,
 	Height: UINT,
@@ -248,7 +254,7 @@ use dxgi_constants::*;
 	Flags: UINT,
 }
 
-#[repr(C)] pub struct _DXGI_SWAP_CHAIN_DESC1 {
+#[repr(C)] pub struct DXGI_SWAP_CHAIN_DESC1 {
 	Width: UINT,
 	Height: UINT,
 	Format: DXGI_FORMAT,

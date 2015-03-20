@@ -25,7 +25,7 @@
 //! # References
 //! [DXGI Constants, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471319(v=vs.85).aspx)
 
-use winapi::{ GUID, ULONG };
+use winapi::{ GUID, ULONG, UINT };
 pub use winapi::winerror::{ DXGI_ERROR_DEVICE_HUNG, DXGI_ERROR_DEVICE_REMOVED,
 	DXGI_ERROR_DEVICE_RESET, DXGI_ERROR_DRIVER_INTERNAL_ERROR,
 	DXGI_ERROR_FRAME_STATISTICS_DISJOINT, DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE,

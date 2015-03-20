@@ -34,6 +34,7 @@ use dxgi_structures::*;
 
 mod macros;
 mod dxgi_structures;
+mod dxgi_enumerations;
 mod dxgi_constants;
 
 
