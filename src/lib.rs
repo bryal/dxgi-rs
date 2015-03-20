@@ -27,25 +27,22 @@ extern crate winapi;
 
 use libc::c_void;
 use winapi::{ REFIID, HRESULT };
-use dxgi_interfaces::*;
-use dxgi_structures::*;
-use dxgi_constants::*;
+pub use dxgi_interfaces::*;
+pub use dxgi_structures::*;
+pub use dxgi_constants::*;
 
-mod macros;
-mod dxgi_structures;
-mod dxgi_enumerations;
-mod dxgi_constants;
-mod dxgi_interfaces;
+pub mod macros;
+pub mod dxgi_structures;
+pub mod dxgi_enumerations;
+pub mod dxgi_constants;
+pub mod dxgi_interfaces;
+
+#[cfg(test)]
+mod test;
 
 #[link(name="dxgi")]
 extern "C" {
 	#![allow(dead_code)]
 
-	fn CreateDXGIFactory1(riid: REFIID, ppFactory: *mut *mut c_void) -> HRESULT;
-}
-
-fn main() {
-	use std::ptr;
-	let mut factory: *mut c_void = ptr::null_mut();
-	assert_eq!(0, unsafe { CreateDXGIFactory1(&IID_IDXGIFactory1, &mut factory) });
+	pub fn CreateDXGIFactory1(riid: REFIID, ppFactory: *mut *mut c_void) -> HRESULT;
 }
