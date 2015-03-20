@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+//! FFI bindings to DXGI
+
+#![cfg(windows)]
 #![feature(libc)]
 
 extern crate libc;
