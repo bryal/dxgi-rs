@@ -56,15 +56,7 @@ macro_rules! c_vtable_struct {
 macro_rules! c_vtable_actual {
 	([ ]; $($x:tt)*) => {};
 
-	([ $tablename:ident of $parent:ty { $($methods:tt)* }; $($rest:tt)* ];
-		$($inh_methods:tt)*
-	) => {
-		c_vtable_struct!($tablename, $parent, $($methods)* $($inh_methods)*);
-
-		c_vtable_actual!( [ $($rest)* ]; $($inh_methods)* );
-	};
-
-	([ $tablename:ident of $parent:ty { $($methods:tt)* } with heirs [ $($heirs:tt)* ];
+	([ $tablename:ident of $parent:ty { $($methods:tt)* } with heirs [ $($heirs:tt)* ]
 			$($rest:tt)*
 		];
 		$($inh_methods:tt)*
@@ -74,11 +66,19 @@ macro_rules! c_vtable_actual {
 		c_vtable_actual!( [ $($heirs)* ]; $($methods)* $($inh_methods)* );
 		c_vtable_actual!( [ $($rest)* ]; $($inh_methods)* );
 	};
+
+	([ $tablename:ident of $parent:ty { $($methods:tt)* } $($rest:tt)* ];
+		$($inh_methods:tt)*
+	) => {
+		c_vtable_struct!($tablename, $parent, $($methods)* $($inh_methods)*);
+
+		c_vtable_actual!( [ $($rest)* ]; $($inh_methods)* );
+	};
 }
 
 macro_rules! c_vtable {
 	($($table:tt)*) => {
-		c_vtable_actual!([ $($table)*; ];);
+		c_vtable_actual!([ $($table)* ];);
 	}
 }
 
@@ -107,14 +107,14 @@ mod test {
 	} with heirs [
 		ZeroTable of Zero {
 			fn zero(a: u32) -> u32,
-		};
+		}
 		TwoTable of Two {
 			fn two(a: u32) -> u32,
 		} with heirs [
 			ThreeTable of Three {
 				fn three(a: u32) -> u32,
-			};
-		];
+			}
+		]
 	]);
 
 	// Current funtion pointer members:

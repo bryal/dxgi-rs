@@ -29,10 +29,13 @@ use libc::{ c_void };
 use winapi::{ HRESULT, ULONG, REFGUID,
 	UINT, IUnknown, REFIID,
 	LARGE_INTEGER, GUID, HWND,
-	HMODULE, BOOL };
+	HMODULE, BOOL, INT,
+	HANDLE, RECT, LUID,
+	DWORD };
 
 use dxgi_structures::*;
 use dxgi_enumerations::*;
+use dxgi_constants::*;
 
 #[repr(C)] pub struct IDXGIAdapter {
 	lpVtbl: *mut IDXGIAdapterVtbl
@@ -154,11 +157,41 @@ IUnknownVtbl of () {
 		} with heirs [
 			IDXGIAdapter1Vtbl of IDXGIAdapter1 {
 				fn GetDesc1(desc: *mut DXGI_ADAPTER_DESC1) -> HRESULT,
-			};
+			}
 			IDXGIAdapter2Vtbl of IDXGIAdapter2 {
 				fn GetDesc2(desc: *mut DXGI_ADAPTER_DESC2) -> HRESULT,
-			};
-		];
+			}
+		]
+		IDXGIDeviceVtbl of IDXGIDevice {
+			fn GetAdapter(adapter: *mut *mut IDXGIAdapter) -> HRESULT,
+			fn CreateSurface(desc: *const DXGI_SURFACE_DESC, num_surfaces: UINT, usage: DXGI_USAGE,
+				shared_resource: *const DXGI_SHARED_RESOURCE, surface: *mut *mut IDXGISurface)
+				-> HRESULT,
+			fn QueryResourceResidency(resources: *const IUnknown,
+				residency_status: *mut DXGI_RESIDENCY, num_resources: UINT) -> HRESULT,
+			fn SetGPUThreadPriority(priority: INT) -> HRESULT,
+			fn GetGPUThreadPriority(priority: *mut INT) -> HRESULT,
+		} with heirs [
+			IDXGIDevice1Vtbl of IDXGIDevice1 {
+				fn GetMaximumFrameLatency(max_latency: *mut UINT) -> HRESULT,
+				fn SetMaximumFrameLatency(max_latency: UINT) -> HRESULT,
+			} with heirs [
+				IDXGIDevice2Vtbl of IDXGIDevice2 {
+					fn OfferResources(num_resources: UINT, resources: *const *mut IDXGIResource,
+						priority: DXGI_OFFER_RESOURCE_PRIORITY) -> HRESULT,
+					fn ReclaimResources(num_resources: UINT, resources: *const *mut IDXGIResource,
+						discarded: *mut BOOL) -> HRESULT,
+					fn EnqueueSetEvent(event: HANDLE) -> HRESULT,
+				} with heirs [
+					IDXGIDevice3Vtbl of IDXGIDevice3 {
+						fn Trim() -> (),
+					}
+				]
+			]
+		]
+		IDXGIDeviceSubObjectVtbl of IDXGIDeviceSubObject {
+			fn GetDevice(riid: REFIID, device: *mut *mut c_void) -> HRESULT,
+		}
 		IDXGIFactoryVtbl of IDXGIFactory {
 			fn EnumAdapters(adapter_i: UINT, adapter: *mut *mut IDXGIAdapter) -> HRESULT,
 			fn MakeWindowAssociation(window_handle: HWND, flags: UINT) -> HRESULT,
@@ -166,7 +199,42 @@ IUnknownVtbl of () {
 			fn CreateSwapChain(device: *mut IUnknown, desc: *mut DXGI_SWAP_CHAIN_DESC,
 				swapchain: *mut *mut IDXGISwapChain) -> HRESULT,
 			fn CreateSoftwareAdapter(module: HMODULE, adapter: *mut *mut IDXGIAdapter) -> HRESULT,
-		};
+		} with heirs [
+			IDXGIFactory1Vtbl of IDXGIFactory1 {
+				fn EnumAdapters1(adapter_i: UINT, adapter: *mut *mut IDXGIAdapter1) -> HRESULT,
+				fn IsCurrent() -> BOOL,
+			} with heirs [
+				IDXGIFactory2Vtbl of IDXGIFactory2 {
+					fn IsWindowedStereoEnabled() -> BOOL,
+					fn CreateSwapChainForHwnd(device: *mut IUnknown, hwnd: HWND,
+						desc: *const DXGI_SWAP_CHAIN_DESC1,
+						fullscreen_desc: *const DXGI_SWAP_CHAIN_FULLSCREEN_DESC,
+						restrict_to_output: *mut IDXGIOutput, swapchain: *mut *mut IDXGISwapChain1)
+						-> HRESULT,
+					fn CreateSwapChainForCoreWindow(device: *mut IUnknown, window: *mut IUnknown,
+						desc: *const DXGI_SWAP_CHAIN_DESC1,
+						restrict_to_output: *mut DXGI_SWAP_CHAIN_DESC1) -> HRESULT,
+					fn GetSharedResourceAdapterLuid(resource: HANDLE, luid: *mut LUID) -> HRESULT,
+					fn RegisterStereoStatusWindow(window_handle: HWND, msg: UINT,
+						cookie: *mut DWORD) -> HRESULT,
+					fn RegisterStereoStatusEvent(event_handle: HANDLE, cookie: *mut DWORD)
+						-> HRESULT,
+					fn UnregisterStereoStatus(cookit: DWORD) -> (),
+					fn RegisterOcclusionStatusWindow(window_handle: HWND, msg: UINT,
+						cookie: *mut DWORD) -> HRESULT,
+					fn RegisterOcclusionStatusEvent(event_handle: HANDLE, cookie: *mut DWORD)
+						-> HRESULT,
+					fn UnregisterOcclusionStatus(cookie: DWORD) -> (),
+					fn CreateSwapChainForComposition(device: *mut IUnknown,
+						desc: *const DXGI_SWAP_CHAIN_DESC1, restrict_to_output: *mut IDXGIOutput,
+						swapchain: *mut *mut IDXGISwapChain1) -> HRESULT,
+				} with heirs [
+					IDXGIFactory3Vtbl of IDXGIFactory3 {
+						fn GetCreationFlags() -> UINT,
+					}
+				]
+			]
+		]
 		IDXGIOutputVtbl of IDXGIOutput {
 			fn GetDesc(desc: *mut DXGI_OUTPUT_DESC) -> HRESULT,
 			fn GetDisplayModeList(enum_format: DXGI_FORMAT, flags: UINT, num_modes: *mut UINT,
@@ -182,8 +250,8 @@ IUnknownVtbl of () {
 			fn SetDisplaySurface(scanout_surface: *mut IDXGISurface) -> HRESULT,
 			fn GetDispleySurfaceData(destination: *mut IDXGISurface) -> HRESULT,
 			fn GetFrameStatistics(stats: *mut DXGI_FRAME_STATISTICS) -> HRESULT,
-		};
-	];
+		}
+	]
 	IDXGIDebugVtbl of IDXGIDebug {
 		fn ReportLiveObjects(apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT,
 	} with heirs [
@@ -192,5 +260,20 @@ IUnknownVtbl of () {
 			fn DisableLeakTrackingForThread() -> (),
 			fn IsLeakTrckingEnabledForThread() -> (),
 		}
-	];
+	]
+	IDXGIDecodeSwapChainVtbl of IDXGIDecodeSwapChain {
+		fn GetColorSpace() -> DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS,
+		fn GetDestSize(width: *mut UINT, height: *mut UINT) -> HRESULT,
+		fn GetSourceRect(rect: *mut RECT) -> HRESULT,
+		fn GetTargetRect(rect: *mut RECT) -> HRESULT,
+		fn PresentBuffer(buffet_to_present: UINT, SyncInterval: UINT, flags: UINT) -> HRESULT,
+		fn SetColorSpace(color_space: DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS) -> HRESULT,
+		fn SetDestSize(width: UINT, height: UINT) -> HRESULT,
+		fn SetSourceRect(rect: *const RECT) -> HRESULT,
+		fn SetTargetRect(rect: *const RECT) -> HRESULT,
+	}
+	IDXGIDisplayControlVtbl of IDXGIDisplayControl {
+		fn IsStereoEnabled() -> BOOL,
+		fn SetStereoEnabled(enabled: BOOL) -> (),
+	}
 ]);
