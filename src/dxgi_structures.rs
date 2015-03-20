@@ -89,6 +89,17 @@ pub type DXGI_INFO_QUEUE_MESSAGE_ID = c_int;
 	SyncGPUTime: LARGE_INTEGER,
 }
 
+#[repr(C)] pub struct DXGI_FRAME_STATISTICS_MEDIA {
+	PresentCount: UINT,
+	PresentRefreshCount: UINT,
+	SyncRefreshCount: UINT,
+	SyncQPCTime: LARGE_INTEGER,
+	SyncGPUTime: LARGE_INTEGER,
+
+	CompositionMode: DXGI_FRAME_PRESENTATION_MODE,
+	ApprovedPresentDuration: UINT,
+}
+
 #[repr(C)] pub struct DXGI_GAMMA_CONTROL {
 	Scale: DXGI_RGB,
 	Offset: DXGI_RGB,
