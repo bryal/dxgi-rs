@@ -97,7 +97,6 @@ pub type DXGI_INFO_QUEUE_MESSAGE_ID = c_int;
 	pub SyncRefreshCount: UINT,
 	pub SyncQPCTime: LARGE_INTEGER,
 	pub SyncGPUTime: LARGE_INTEGER,
-pub 
 	pub CompositionMode: DXGI_FRAME_PRESENTATION_MODE,
 	pub ApprovedPresentDuration: UINT,
 }
