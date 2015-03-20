@@ -26,10 +26,7 @@ extern crate libc;
 extern crate winapi;
 
 use libc::c_void;
-use winapi::{ REFIID, REFGUID, GUID,
-	HRESULT, ULONG, UINT,
-	IUnknown, LARGE_INTEGER, SIZE_T,
-	WCHAR, LUID, HWND, BOOL};
+use winapi::{ REFIID, HRESULT, GUID };
 use dxgi_structures::*;
 
 mod macros;
