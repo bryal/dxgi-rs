@@ -36,6 +36,7 @@ mod macros;
 mod dxgi_structures;
 mod dxgi_enumerations;
 mod dxgi_constants;
+mod dxgi_interfaces;
 
 
 define_guid!(IID_IDXGIObject,
@@ -66,65 +67,6 @@ define_guid!(IID_IDXGIAdapter1,
 	0x29038f61, 0x3839, 0x4626, [0x91, 0xfd, 0x08, 0x68, 0x79, 0x01, 0x1a, 0x05]);
 define_guid!(IID_IDXGIDevice1,
 	0x77db970f, 0x6276, 0x48ba, [0xba, 0x28, 0x07, 0x01, 0x43, 0xb4, 0x39, 0x2c]);
-
-#[repr(C)] struct IDXGIObject {
-	vtable: *mut IDXGIObjectVtbl
-}
-
-#[repr(C)] struct IDXGIAdapter {
-	vtable: *mut IDXGIAdapterVtbl
-}
-
-#[repr(C)]
-struct IDXGIFactory {
-	vtable: *mut IDXGIFactoryVtbl
-}
-
-#[repr(C)]
-struct IDXGIOutput {
-	vtable: *mut IDXGIOutputVtbl
-}
-
-#[repr(C)] c_vtable!(
-IDXGIObjectVtbl of IDXGIObject {
-	fn QueryInterface(riid: REFIID, object: *mut *mut c_void) -> HRESULT,
-	fn AddRef() -> ULONG,
-	fn Release() -> ULONG,
-	fn SetPrivateData(name: REFGUID, data_size: UINT, data: *const c_void) -> HRESULT,
-	fn SetPrivateDataInterface(name: REFGUID, unknown: *const IUnknown) -> HRESULT,
-	fn GetPrivateData(name: REFGUID, data_size: UINT, data: *mut c_void) -> HRESULT,
-	fn GetParent(riid: REFIID, parent: *mut *mut c_void) -> HRESULT,
-} with heirs [
-	IDXGIAdapterVtbl of IDXGIAdapter {
-		fn EnumOutputs(output_i: UINT, output:*mut *mut IDXGIOutput) -> HRESULT,
-		fn GetDesc(desc: *mut *mut DXGI_ADAPTER_DESC) -> HRESULT,
-		fn CheckInterfaceSupport(interface_name: REFGUID, umd_version: LARGE_INTEGER) -> HRESULT,
-	};
-	IDXGIFactoryVtbl of IDXGIFactory {
-		fn EnumAdapters(adapter_i: UINT, adapter: *mut *mut IDXGIAdapter) -> HRESULT,
-		fn MakeWindowAssociation(window_handle: HWND, flags: UINT) -> HRESULT,
-		fn GetWindowAssociation(window_handle: *mut HWND) -> HRESULT,
-		fn CreateSwapChain(device: *mut IUnknown, desc: *mut DXGI_SWAP_CHAIN_DESC,
-			swapchain: *mut *mut IDXGISwapChain) -> HRESULT,
-		fn CreateSoftwareAdapter(module: HMODULE, adapter: *mut *mut IDXGIAdapter) -> HRESULT,
-	};
-	IDXGIOutputVtbl of IDXGIOutput {
-		fn GetDesc(desc: *mut DXGI_OUTPUT_DESC) -> HRESULT,
-		fn GetDisplayModeList(enum_format: DXGI_FORMAT, flags: UINT, num_modes: *mut UINT,
-			desc: *mut DXGI_MODE_DESC) -> HRESULT,
-		fn FingClosestMatchingMode(mode_to_match: *const DXGI_MODE_DESC,
-			closest_match: *mut DXGI_MODE_DESC, concerned_device: IUnknown) -> HRESULT,
-		fn WaitForVBlank() -> HRESULT,
-		fn TakeOwnerShip(device: *mut IUnknown, exclusive: BOOL) -> HRESULT,
-		fn ReleaseOwnership() -> (),
-		fn GetGammaControlCapabilities(gamma_caps: *mut DXGI_GAMMA_CONTROL_CAPABILITIES) -> HRESULT,
-		fn SetGammaControl(array: *const DXGI_GAMMA_CONTROL) -> HRESULT,
-		fn GetGammaControl(arrau: *mut DXGI_GAMMA_CONTROL) -> HRESULT,
-		fn SetDisplaySurface(scanout_surface: *mut IDXGISurface) -> HRESULT,
-		fn GetDispleySurfaceData(destination: *mut IDXGISurface) -> HRESULT,
-		fn GetFrameStatistics(stats: *mut DXGI_FRAME_STATISTICS) -> HRESULT,
-	};
-]);
 
 #[link(name="dxgi")]
 extern "C" {
