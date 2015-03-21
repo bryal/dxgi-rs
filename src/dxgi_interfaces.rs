@@ -42,103 +42,103 @@ use dxgi_enumerations::*;
 use dxgi_constants::*;
 
 #[repr(C)] pub struct IDXGIAdapter {
-	pub lpVtbl: *mut IDXGIAdapterVtbl
+	pub vtable: *mut IDXGIAdapterVtbl
 }
 #[repr(C)] pub struct IDXGIAdapter1 {
-	pub lpVtbl: *mut IDXGIAdapter1Vtbl
+	pub vtable: *mut IDXGIAdapter1Vtbl
 }
 #[repr(C)] pub struct IDXGIAdapter2 {
-	pub lpVtbl: *mut IDXGIAdapter2Vtbl
+	pub vtable: *mut IDXGIAdapter2Vtbl
 }
 #[repr(C)] pub struct IDXGIDebug {
-	pub lpVtbl: *mut IDXGIDebugVtbl
+	pub vtable: *mut IDXGIDebugVtbl
 }
 #[repr(C)] pub struct IDXGIDebug1 {
-	pub lpVtbl: *mut IDXGIDebug1Vtbl
+	pub vtable: *mut IDXGIDebug1Vtbl
 }
 #[repr(C)] pub struct IDXGIDecodeSwapChain {
-	pub lpVtbl: *mut IDXGIDecodeSwapChainVtbl
+	pub vtable: *mut IDXGIDecodeSwapChainVtbl
 }
 #[repr(C)] pub struct IDXGIDevice {
-	pub lpVtbl: *mut IDXGIDeviceVtbl
+	pub vtable: *mut IDXGIDeviceVtbl
 }
 #[repr(C)] pub struct IDXGIDevice1 {
-	pub lpVtbl: *mut IDXGIDevice1Vtbl
+	pub vtable: *mut IDXGIDevice1Vtbl
 }
 #[repr(C)] pub struct IDXGIDevice2 {
-	pub lpVtbl: *mut IDXGIDevice2Vtbl
+	pub vtable: *mut IDXGIDevice2Vtbl
 }
 #[repr(C)] pub struct IDXGIDevice3 {
-	pub lpVtbl: *mut IDXGIDevice3Vtbl
+	pub vtable: *mut IDXGIDevice3Vtbl
 }
 #[repr(C)] pub struct IDXGIDeviceSubObject {
-	pub lpVtbl: *mut IDXGIDeviceSubObjectVtbl
+	pub vtable: *mut IDXGIDeviceSubObjectVtbl
 }
 #[repr(C)] pub struct IDXGIDisplayControl {
-	pub lpVtbl: *mut IDXGIDisplayControlVtbl
+	pub vtable: *mut IDXGIDisplayControlVtbl
 }
 #[repr(C)] pub struct IDXGIFactory {
-	pub lpVtbl: *mut IDXGIFactoryVtbl
+	pub vtable: *mut IDXGIFactoryVtbl
 }
 #[repr(C)] pub struct IDXGIFactory1 {
-	pub lpVtbl: *mut IDXGIFactory1Vtbl
+	pub vtable: *mut IDXGIFactory1Vtbl
 }
 #[repr(C)] pub struct IDXGIFactory2 {
-	pub lpVtbl: *mut IDXGIFactory2Vtbl
+	pub vtable: *mut IDXGIFactory2Vtbl
 }
 #[repr(C)] pub struct IDXGIFactory3 {
-	pub lpVtbl: *mut IDXGIFactory3Vtbl
+	pub vtable: *mut IDXGIFactory3Vtbl
 }
 #[repr(C)] pub struct IDXGIFactoryMedia {
-	pub lpVtbl: *mut IDXGIFactoryMediaVtbl
+	pub vtable: *mut IDXGIFactoryMediaVtbl
 }
 #[repr(C)] pub struct IDXGIInfoQueue {
-	pub lpVtbl: *mut IDXGIInfoQueueVtbl
+	pub vtable: *mut IDXGIInfoQueueVtbl
 }
 #[repr(C)] pub struct IDXGIKeyedMutex {
-	pub lpVtbl: *mut IDXGIKeyedMutexVtbl
+	pub vtable: *mut IDXGIKeyedMutexVtbl
 }
 #[repr(C)] pub struct IDXGIObject {
-	pub lpVtbl: *mut IDXGIObjectVtbl
+	pub vtable: *mut IDXGIObjectVtbl
 }
 #[repr(C)] pub struct IDXGIOutput {
-	pub lpVtbl: *mut IDXGIOutputVtbl
+	pub vtable: *mut IDXGIOutputVtbl
 }
 #[repr(C)] pub struct IDXGIOutput1 {
-	pub lpVtbl: *mut IDXGIOutput1Vtbl
+	pub vtable: *mut IDXGIOutput1Vtbl
 }
 #[repr(C)] pub struct IDXGIOutput2 {
-	pub lpVtbl: *mut IDXGIOutput2Vtbl
+	pub vtable: *mut IDXGIOutput2Vtbl
 }
 #[repr(C)] pub struct IDXGIOutputDuplication {
-	pub lpVtbl: *mut IDXGIOutputDuplicationVtbl
+	pub vtable: *mut IDXGIOutputDuplicationVtbl
 }
 #[repr(C)] pub struct IDXGIResource {
-	pub lpVtbl: *mut IDXGIResourceVtbl
+	pub vtable: *mut IDXGIResourceVtbl
 }
 #[repr(C)] pub struct IDXGIResource1 {
-	pub lpVtbl: *mut IDXGIResource1Vtbl
+	pub vtable: *mut IDXGIResource1Vtbl
 }
 #[repr(C)] pub struct IDXGISurface {
-	pub lpVtbl: *mut IDXGISurfaceVtbl
+	pub vtable: *mut IDXGISurfaceVtbl
 }
 #[repr(C)] pub struct IDXGISurface1 {
-	pub lpVtbl: *mut IDXGISurface1Vtbl
+	pub vtable: *mut IDXGISurface1Vtbl
 }
 #[repr(C)] pub struct IDXGISurface2 {
-	pub lpVtbl: *mut IDXGISurface2Vtbl
+	pub vtable: *mut IDXGISurface2Vtbl
 }
 #[repr(C)] pub struct IDXGISwapChain {
-	pub lpVtbl: *mut IDXGISwapChainVtbl
+	pub vtable: *mut IDXGISwapChainVtbl
 }
 #[repr(C)] pub struct IDXGISwapChain1 {
-	pub lpVtbl: *mut IDXGISwapChain1Vtbl
+	pub vtable: *mut IDXGISwapChain1Vtbl
 }
 #[repr(C)] pub struct IDXGISwapChain2 {
-	pub lpVtbl: *mut IDXGISwapChain2Vtbl
+	pub vtable: *mut IDXGISwapChain2Vtbl
 }
 #[repr(C)] pub struct IDXGISwapChainMedia {
-	pub lpVtbl: *mut IDXGISwapChainMediaVtbl
+	pub vtable: *mut IDXGISwapChainMediaVtbl
 }
 
 #[repr(C)] c_vtable!(

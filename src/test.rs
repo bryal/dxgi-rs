@@ -13,7 +13,7 @@ fn test() {
 
 	assert!(factory as usize != 0);
 
-	println!("IsCurrent: {}", (*(*factory).lpVtbl).IsCurrent.unwrap()(factory) != 0);
+	println!("IsCurrent: {}", c_mtdcall!(factory->IsCurrent()) != 0);
 
 	}
 }

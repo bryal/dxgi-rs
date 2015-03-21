@@ -76,22 +76,41 @@ macro_rules! c_vtable {
 	}
 }
 
+/// Call a method of a C++ object represented as a C struct
+macro_rules! c_mtdcall {
+	( $obj:ident->$method:ident( ) ) => {
+		(*(*$obj).vtable).$method.unwrap()($obj)
+	};
+
+	( $obj:ident->$method:ident($($args:expr),+) ) => {
+		(*(*$obj).vtable).$method.unwrap()($obj, $($args),*)
+	};
+
+	( $obj:ident.$method:ident( ) ) => {
+		(*$obj.vtable).$method.unwrap()(&mut $obj)
+	};
+
+	( $obj:ident.$method:ident($($args:expr),+) ) => {
+		(*$obj.vtable).$method.unwrap()(&mut $obj, $($args),*)
+	};
+}
+
 #[cfg(test)]
 mod test {
 	struct One {
-		table: OneTable,
+		vtable: *mut OneTable,
 	}
 
 	struct Zero {
-		table: ZeroTable,
+		vtable: *mut ZeroTable,
 	}
 
 	struct Three {
-		table: ThreeTable,
+		vtable: *mut ThreeTable,
 	}
 
 	struct Two {
-		table: TwoTable,
+		vtable: *mut TwoTable,
 	}
 
 	// Create the vtables using inheritance
@@ -122,16 +141,23 @@ mod test {
 	extern "system" fn fthree(_: *mut Three, a: u32) -> u32 { a * 3 }
 
 	#[test]
+	fn c_method_call_macro() {
+		extern "system" fn fone(_: *mut One, _: u32) -> u32 { 1337 }
+		let one: *mut _ = &mut One{
+			vtable: &mut OneTable{
+				one: Some(fone) } };
+
+		unsafe { assert_eq!(c_mtdcall!(one->one(1)), (*(*one).vtable).one.unwrap()(one, 1)); }
+	}
+
+	#[test]
 	fn three_table() {
 		let mut three = Three{
-			table: ThreeTable{
+			vtable: &mut ThreeTable{
 				one: Some(fone),
 				two: Some(ftwo),
 				three: Some(fthree) } };
-		let p_three: *mut _ = &mut three;
 		let v = 1;
-		assert_eq!(unsafe { three.table.one.unwrap()(p_three, v) +
-			three.table.three.unwrap()(p_three, v)
-		}, 1 + 3);
+		assert_eq!(unsafe { c_mtdcall!(three.one(v)) + c_mtdcall!(three.three(v)) }, 1 + 3);
 	}
 }
