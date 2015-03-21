@@ -35,40 +35,171 @@ macro_rules! define_guid {
 macro_rules! c_vtable_struct {
 	( ) => { };
 
-	( $tablename:ident, $parent:ty, ) => { pub struct $tablename; };
+	( $tablename:ident, $parent:ty, ) => { #[repr(C)] pub struct $tablename; };
 
 	( $tablename:ident, $parent:ty,
 		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
 	{
-		pub struct $tablename {
+		#[repr(C)] pub struct $tablename {
 			$( pub $methodname: Option<unsafe extern "system" fn(
 				this: *mut $parent, $($argname: $argtype),*) -> $rettype>, )*
 		}
 	}
 }
 
-macro_rules! c_vtable_actual {
-	([ ]; $($x:tt)*) => {};
-
-	([ $tablename:ident of $parent:ty { $($methods:tt)* } with heirs [ $($heirs:tt)* ]
-			$($siblings:tt)*
-		];
-		$($inh_methods:tt)* ) =>
+macro_rules! c_vtable_methods_to_trait {
+	($traitname:ident, [ ],
+		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
 	{
-		c_vtable_struct!($tablename, $parent, $($inh_methods)* $($methods)* );
-
-		c_vtable_actual!( [ $($heirs)* ]; $($inh_methods)* $($methods)* );
-		c_vtable_actual!( [ $($siblings)* ]; $($inh_methods)* );
+		pub trait $traitname {
+			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
+		}
 	};
 
-	([ $tablename:ident of $parent:ty { $($methods:tt)* } $($siblings:tt)* ];
-		$($inh_methods:tt)*
-	) => {
-		c_vtable_actual!( [ $tablename of $parent { $($methods)* } with heirs [ ] $($siblings)* ];
-			$($inh_methods)* );
+	($traitname:ident, [ $parent_trait:ident ],
+		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+	{
+		pub trait $traitname: $parent_trait {
+			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
+		}
+	};
+
+	($traitname:ident, [ $parent_trait:ident, $($parent_traits:ident),+ ],
+		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+	{
+		pub trait $traitname: $($parent_traits + )* $parent_trait {
+			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
+		}
 	};
 }
 
+macro_rules! impl_c_vtable_trait {
+	($traitname:ident, $parent:ty,
+		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+	{
+		impl $traitname for $parent {
+			$(
+				fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype {
+					unsafe { c_mtdcall!(self,->$methodname($($argname),*)) }
+				}
+			)*
+		}
+	};
+}
+
+macro_rules! c_vtable_actual {
+	([ ]; $($x:tt)*) => {};
+
+	// ([structs to implement]; [these traits and create vtables for]; these methods)
+	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
+			with heirs [$($heirs:tt)*] $($siblings:tt)*
+		];
+		$(($inh_trait:ident, $($inh_methods:tt)*) )*) =>
+	{
+		c_vtable_struct!($table, $parent, $($($inh_methods)*)* $($methods)* );
+		c_vtable_methods_to_trait!($traitname, [ $($inh_trait),* ], $($methods)*);
+
+		impl_c_vtable_trait!($traitname, $parent, $($methods)*);
+		$(
+			impl_c_vtable_trait!($inh_trait, $parent, $($inh_methods)*);
+		)*
+
+		c_vtable_actual!( [ $($heirs)* ];
+			$(($inh_trait, $($inh_methods)*) )* ($traitname, $($methods)*) );
+		c_vtable_actual!( [ $($siblings)* ]; $(($inh_trait, $($inh_methods)*) )* );
+	};
+
+	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* } $($siblings:tt)* ];
+		$($inheritance:tt)*) =>
+	{
+		c_vtable_actual!( [ $table of $parent, trait $traitname { $($methods)* } with heirs [ ]
+			$($siblings)* ];
+			$($inheritance)* );
+	};
+}
+
+/// Macro used to make making bindings for C representations of C++ classes more convenient.
+///
+/// This macro, through `c_vtable_actual!`, also provides traits to make interfacing with rust code
+/// easier.
+///
+/// This:
+///
+/// ```rust,ignore
+/// c_vtable!(
+/// IUnknownVtbl of IUnknown, trait IUnknownT { 
+///     fn QueryInterface(riid: REFIID, object: *mut *mut c_void) -> HRESULT,
+///     fn AddRef() -> ULONG,
+///     fn Release() -> ULONG,
+/// } with heirs [
+///     IDXGIDebugVtbl of IDXGIDebug, trait IDXGIDebugT {
+///         fn ReportLiveObjects(apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT,
+///     }
+/// ]);
+/// ```
+///
+/// Expands to this:
+///
+/// ```rust,ignore
+/// #[repr(C)]
+/// pub struct IUnknownVtbl {
+///     pub QueryInterface: Option<unsafe extern "system" fn(this: *mut IUnknown, riid: REFIID,
+///         object: *mut *mut c_void) -> HRESULT>,
+///     pub AddRef: Option<unsafe extern "system" fn(this: *mut IUnknown) -> ULONG>,
+///     pub Release: Option<unsafe extern "system" fn(this: *mut IUnknown) -> ULONG>,
+/// }
+/// trait IUnknownT {
+///     fn QueryInterface(&mut self, riid: REFIID, object: *mut *mut c_void) -> HRESULT;
+///     fn AddRef(&mut self) -> ULONG;
+///     fn Release(&mut self) -> ULONG;
+/// }
+/// impl IUnknownT for IUnknown {
+///     fn QueryInterface(&mut self, riid: REFIID, object: *mut *mut c_void) -> HRESULT {
+///         unsafe {
+///             (*(*self).vtable).QueryInterface.unwrap()(&mut *self, riid, object)
+///         }
+///     }
+///     fn AddRef(&mut self) -> ULONG {
+///         unsafe { (*(*self).vtable).AddRef.unwrap()(&mut *self) }
+///     }
+///     fn Release(&mut self) -> ULONG {
+///         unsafe { (*(*self).vtable).Release.unwrap()(&mut *self) }
+///     }
+/// }
+/// #[repr(C)]
+/// pub struct IDXGIDebugVtbl {
+///     pub QueryInterface: Option<unsafe extern "system" fn(this: *mut IDXGIDebug, riid: REFIID,
+///         object: *mut *mut c_void) -> HRESULT>,
+///     pub AddRef: Option<unsafe extern "system" fn(this: *mut IDXGIDebug) -> ULONG>,
+///     pub Release: Option<unsafe extern "system" fn(this: *mut IDXGIDebug) -> ULONG>,
+///     pub ReportLiveObjects: Option<unsafe extern "system" fn(this: *mut IDXGIDebug,
+///         apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT>,
+/// }
+/// trait IDXGIDebugT: IUnknownT {
+///     fn ReportLiveObjects(&mut self, apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT;
+/// }
+/// impl IDXGIDebugT for IDXGIDebug {
+///     fn ReportLiveObjects(&mut self, apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT {
+///         unsafe {
+///             (*(*self).vtable).ReportLiveObjects.unwrap()(&mut *self, apiid, flags)
+///         }
+///     }
+/// }
+/// impl IUnknownT for IDXGIDebug {
+///     fn QueryInterface(&mut self, riid: REFIID, object: *mut *mut c_void) -> HRESULT {
+///         unsafe {
+///             (*(*self).vtable).QueryInterface.unwrap()(&mut *self, riid, object)
+///         }
+///     }
+///     fn AddRef(&mut self) -> ULONG {
+///         unsafe { (*(*self).vtable).AddRef.unwrap()(&mut *self) }
+///     }
+///     fn Release(&mut self) -> ULONG {
+///         unsafe { (*(*self).vtable).Release.unwrap()(&mut *self) }
+///     }
+/// }
+/// ```
+#[macro_export]
 macro_rules! c_vtable {
 	($($table:tt)*) => {
 		c_vtable_actual!([ $($table)* ];);
@@ -115,16 +246,16 @@ mod test {
 
 	// Create the vtables using inheritance
 	#[repr(C)] c_vtable!(
-	OneTable of One {
+	OneTable of One, trait OneT {
 		fn one(a: u32) -> u32,
 	} with heirs [
-		ZeroTable of Zero {
+		ZeroTable of Zero, trait ZeroT {
 			fn zero(a: u32) -> u32,
 		}
-		TwoTable of Two {
+		TwoTable of Two, trait TwoT {
 			fn two(a: u32) -> u32,
 		} with heirs [
-			ThreeTable of Three {
+			ThreeTable of Three, trait ThreeT {
 				fn three(a: u32) -> u32,
 			}
 		]

@@ -30,17 +30,20 @@
 
 use libc::{ c_void };
 use winapi::{ HRESULT, ULONG, REFGUID,
-	UINT, IUnknown, REFIID,
+	UINT, LPCWSTR, REFIID,
 	LARGE_INTEGER, GUID, HWND,
 	HMODULE, BOOL, INT,
 	HANDLE, RECT, LUID,
 	DWORD, UINT64, LPCSTR,
-	SIZE_T, SECURITY_ATTRIBUTES, LPCWSTR };
+	SIZE_T, SECURITY_ATTRIBUTES };
 
 use dxgi_structures::*;
 use dxgi_enumerations::*;
 use dxgi_constants::*;
 
+#[repr(C)] pub struct IUnknown {
+	pub vtable: *mut IUnknownVtbl
+}
 #[repr(C)] pub struct IDXGIAdapter {
 	pub vtable: *mut IDXGIAdapterVtbl
 }
@@ -141,32 +144,31 @@ use dxgi_constants::*;
 	pub vtable: *mut IDXGISwapChainMediaVtbl
 }
 
-#[repr(C)] c_vtable!(
-// We only need the methods for inheritance, the actual IUnknown is imported from winapi
-IUnknownVtbl of () {
+c_vtable!(
+IUnknownVtbl of IUnknown, trait IUnknownT { 
 	fn QueryInterface(riid: REFIID, object: *mut *mut c_void) -> HRESULT,
 	fn AddRef() -> ULONG,
 	fn Release() -> ULONG,
 } with heirs [
-	IDXGIObjectVtbl of IDXGIObject {
+	IDXGIObjectVtbl of IDXGIObject, trait IDXGIObjectT {
 		fn SetPrivateData(name: REFGUID, data_size: UINT, data: *const c_void) -> HRESULT,
 		fn SetPrivateDataInterface(name: REFGUID, unknown: *const IUnknown) -> HRESULT,
 		fn GetPrivateData(name: REFGUID, data_size: UINT, data: *mut c_void) -> HRESULT,
 		fn GetParent(riid: REFIID, parent: *mut *mut c_void) -> HRESULT,
 	} with heirs [
-		IDXGIAdapterVtbl of IDXGIAdapter {
+		IDXGIAdapterVtbl of IDXGIAdapter, trait IDXGIAdapterT {
 			fn EnumOutputs(output_i: UINT, output:*mut *mut IDXGIOutput) -> HRESULT,
 			fn GetDesc(desc: *mut *mut DXGI_ADAPTER_DESC) -> HRESULT,
 			fn CheckInterfaceSupport(interface_name: REFGUID, umd_version: LARGE_INTEGER) -> HRESULT,
 		} with heirs [
-			IDXGIAdapter1Vtbl of IDXGIAdapter1 {
+			IDXGIAdapter1Vtbl of IDXGIAdapter1, trait IDXGIAdapter1T {
 				fn GetDesc1(desc: *mut DXGI_ADAPTER_DESC1) -> HRESULT,
 			}
-			IDXGIAdapter2Vtbl of IDXGIAdapter2 {
+			IDXGIAdapter2Vtbl of IDXGIAdapter2, trait IDXGIAdapter2T {
 				fn GetDesc2(desc: *mut DXGI_ADAPTER_DESC2) -> HRESULT,
 			}
 		]
-		IDXGIDeviceVtbl of IDXGIDevice {
+		IDXGIDeviceVtbl of IDXGIDevice, trait IDXGIDeviceT {
 			fn GetAdapter(adapter: *mut *mut IDXGIAdapter) -> HRESULT,
 			fn CreateSurface(desc: *const DXGI_SURFACE_DESC, num_surfaces: UINT, usage: DXGI_USAGE,
 				shared_resource: *const DXGI_SHARED_RESOURCE, surface: *mut *mut IDXGISurface)
@@ -176,59 +178,59 @@ IUnknownVtbl of () {
 			fn SetGPUThreadPriority(priority: INT) -> HRESULT,
 			fn GetGPUThreadPriority(priority: *mut INT) -> HRESULT,
 		} with heirs [
-			IDXGIDevice1Vtbl of IDXGIDevice1 {
+			IDXGIDevice1Vtbl of IDXGIDevice1, trait IDXGIDevice1T {
 				fn GetMaximumFrameLatency(max_latency: *mut UINT) -> HRESULT,
 				fn SetMaximumFrameLatency(max_latency: UINT) -> HRESULT,
 			} with heirs [
-				IDXGIDevice2Vtbl of IDXGIDevice2 {
+				IDXGIDevice2Vtbl of IDXGIDevice2, trait IDXGIDevice2T {
 					fn OfferResources(num_resources: UINT, resources: *const *mut IDXGIResource,
 						priority: DXGI_OFFER_RESOURCE_PRIORITY) -> HRESULT,
 					fn ReclaimResources(num_resources: UINT, resources: *const *mut IDXGIResource,
 						discarded: *mut BOOL) -> HRESULT,
 					fn EnqueueSetEvent(event: HANDLE) -> HRESULT,
 				} with heirs [
-					IDXGIDevice3Vtbl of IDXGIDevice3 {
+					IDXGIDevice3Vtbl of IDXGIDevice3, trait IDXGIDevice3T {
 						fn Trim() -> (),
 					}
 				]
 			]
 		]
-		IDXGIDeviceSubObjectVtbl of IDXGIDeviceSubObject {
+		IDXGIDeviceSubObjectVtbl of IDXGIDeviceSubObject, trait IDXGIDeviceSubObjectT {
 			fn GetDevice(riid: REFIID, device: *mut *mut c_void) -> HRESULT,
 		} with heirs [
-			IDXGIKeyedMutexVtbl of IDXGIKeyedMutex {
+			IDXGIKeyedMutexVtbl of IDXGIKeyedMutex, trait IDXGIKeyedMutexT {
 				fn AcquireSync(key: UINT64, milliseconds: DWORD) -> HRESULT,
 				fn ReleaseSync(key: UINT64) -> HRESULT,
 			}
-			IDXGIResourceVtbl of IDXGIResource {
+			IDXGIResourceVtbl of IDXGIResource, trait IDXGIResourceT {
 				fn GetSharedHandle(shared_handle: *mut HANDLE) -> HRESULT,
 				fn GetUsage(usage: *mut DXGI_USAGE) -> HRESULT,
 				fn SetEvictionPriority(eviction_priority: UINT) -> HRESULT,
 				fn GetEvictionPriority(evition_priority: *mut UINT) -> HRESULT,
 			} with heirs [
-				IDXGIResource1Vtbl of IDXGIResource1 {
+				IDXGIResource1Vtbl of IDXGIResource1, trait IDXGIResource1T {
 					fn CreateSubresourceSurface(index: UINT, surface: *mut *mut IDXGISurface2)
 						-> HRESULT,
 					fn CreateSharedHandle(attributes: *const SECURITY_ATTRIBUTES, access: DWORD,
 						name: LPCWSTR, handle: *mut HANDLE) -> HRESULT,
 				}
 			]
-			IDXGISurfaceVtbl of IDXGISurface {
+			IDXGISurfaceVtbl of IDXGISurface, trait IDXGISurfaceT {
 				fn GetDesc(desc: *mut DXGI_SURFACE_DESC) -> HRESULT,
 				fn Map(locked_rect: *mut DXGI_MAPPED_RECT, map_flags: UINT) -> HRESULT,
 				fn UnMap() -> HRESULT,
 			} with heirs [
-				IDXGISurface1Vtbl of IDXGISurface1 {
+				IDXGISurface1Vtbl of IDXGISurface1, trait IDXGISurface1T {
 					fn GetDC(discars: BOOL, dirtyrect: *mut RECT) -> HRESULT,
 					fn ReleaseDC(dirtyrect: *mut RECT) -> HRESULT,
 				} with heirs [
-					IDXGISurface2Vtbl of IDXGISurface2 {
+					IDXGISurface2Vtbl of IDXGISurface2, trait IDXGISurface2T {
 						fn GetResource(riid: REFIID, parent_resource: *mut *mut c_void,
 							subresource_index: *mut UINT) -> HRESULT,
 					}
 				]
 			]
-			IDXGISwapChainVtbl of IDXGISwapChain {
+			IDXGISwapChainVtbl of IDXGISwapChain, trait IDXGISwapChainT {
 				fn Present(synt_interval: UINT, flags: UINT) -> HRESULT,
 				fn GetBuffer(buffer: UINT, riid: REFIID, surface: *mut *mut c_void) -> HRESULT,
 				fn SetFullscreenState(fullscreen: BOOL, target: *mut IDXGIOutput) -> HRESULT,
@@ -242,7 +244,7 @@ IUnknownVtbl of () {
 				fn GetFrameStatistics(stats: *mut DXGI_FRAME_STATISTICS) -> HRESULT,
 				fn GetLastPresentCount(last_present_count: *mut UINT) -> HRESULT,
 			} with heirs [
-				IDXGISwapChain1Vtbl of IDXGISwapChain1 {
+				IDXGISwapChain1Vtbl of IDXGISwapChain1, trait IDXGISwapChain1T {
 					fn GetDesc1(desc: *mut DXGI_SWAP_CHAIN_DESC1) -> HRESULT,
 					fn GetFullscreenDesc(desc: *mut DXGI_SWAP_CHAIN_FULLSCREEN_DESC) -> HRESULT,
 					fn GetHwnd(hwnd: *mut HWND) -> HRESULT,
@@ -256,7 +258,7 @@ IUnknownVtbl of () {
 					fn SetRotation(rotation: DXGI_MODE_ROTATION) -> HRESULT,
 					fn GetRotation(rotation: *mut DXGI_MODE_ROTATION) -> HRESULT,
 				} with heirs [
-					IDXGISwapChain2Vtbl of IDXGISwapChain2 {
+					IDXGISwapChain2Vtbl of IDXGISwapChain2, trait IDXGISwapChain2T {
 						fn SetSourceSize(width: UINT, height: UINT) -> HRESULT,
 						fn GetSourceSize(width: *mut UINT, height: *mut UINT) -> HRESULT,
 						fn SetMaximumFrameLatency(max_latency: UINT) -> HRESULT,
@@ -268,7 +270,7 @@ IUnknownVtbl of () {
 				]
 			]
 		]
-		IDXGIFactoryVtbl of IDXGIFactory {
+		IDXGIFactoryVtbl of IDXGIFactory, trait IDXGIFactoryT {
 			fn EnumAdapters(adapter_i: UINT, adapter: *mut *mut IDXGIAdapter) -> HRESULT,
 			fn MakeWindowAssociation(window_handle: HWND, flags: UINT) -> HRESULT,
 			fn GetWindowAssociation(window_handle: *mut HWND) -> HRESULT,
@@ -276,11 +278,11 @@ IUnknownVtbl of () {
 				swapchain: *mut *mut IDXGISwapChain) -> HRESULT,
 			fn CreateSoftwareAdapter(module: HMODULE, adapter: *mut *mut IDXGIAdapter) -> HRESULT,
 		} with heirs [
-			IDXGIFactory1Vtbl of IDXGIFactory1 {
+			IDXGIFactory1Vtbl of IDXGIFactory1, trait IDXGIFactory1T {
 				fn EnumAdapters1(adapter_i: UINT, adapter: *mut *mut IDXGIAdapter1) -> HRESULT,
 				fn IsCurrent() -> BOOL,
 			} with heirs [
-				IDXGIFactory2Vtbl of IDXGIFactory2 {
+				IDXGIFactory2Vtbl of IDXGIFactory2, trait IDXGIFactory2T {
 					fn IsWindowedStereoEnabled() -> BOOL,
 					fn CreateSwapChainForHwnd(device: *mut IUnknown, hwnd: HWND,
 						desc: *const DXGI_SWAP_CHAIN_DESC1,
@@ -305,13 +307,13 @@ IUnknownVtbl of () {
 						desc: *const DXGI_SWAP_CHAIN_DESC1, restrict_to_output: *mut IDXGIOutput,
 						swapchain: *mut *mut IDXGISwapChain1) -> HRESULT,
 				} with heirs [
-					IDXGIFactory3Vtbl of IDXGIFactory3 {
+					IDXGIFactory3Vtbl of IDXGIFactory3, trait IDXGIFactory3T {
 						fn GetCreationFlags() -> UINT,
 					}
 				]
 			]
 		]
-		IDXGIFactoryMediaVtbl of IDXGIFactoryMedia {
+		IDXGIFactoryMediaVtbl of IDXGIFactoryMedia, trait IDXGIFactoryMediaT {
 			fn CreateSwapChainForCompositionSurfaceHandle(device: *mut IUnknown,
 				surface_handle: HANDLE, desc: *const DXGI_SWAP_CHAIN_DESC1,
 				restrict_to_output: *mut IDXGIOutput, swapchain: *mut *mut IDXGISwapChain1)
@@ -321,7 +323,7 @@ IUnknownVtbl of () {
 				yuv_decode_bufs: *mut IDXGIResource, restrict_to_output: *mut IDXGIOutput,
 				swapchain: *mut *mut IDXGIDecodeSwapChain) -> HRESULT,
 		}
-		IDXGIOutputVtbl of IDXGIOutput {
+		IDXGIOutputVtbl of IDXGIOutput, trait IDXGIOutputT {
 			fn GetDesc(desc: *mut DXGI_OUTPUT_DESC) -> HRESULT,
 			fn GetDisplayModeList(enum_format: DXGI_FORMAT, flags: UINT, num_modes: *mut UINT,
 				desc: *mut DXGI_MODE_DESC) -> HRESULT,
@@ -338,7 +340,7 @@ IUnknownVtbl of () {
 			fn GetDispleySurfaceData(destination: *mut IDXGISurface) -> HRESULT,
 			fn GetFrameStatistics(stats: *mut DXGI_FRAME_STATISTICS) -> HRESULT,
 		} with heirs [
-			IDXGIOutput1Vtbl of IDXGIOutput1 {
+			IDXGIOutput1Vtbl of IDXGIOutput1, trait IDXGIOutput1T {
 				fn GetDisplayModeList1(enum_format: DXGI_FORMAT, flags: UINT, num_modes: *mut UINT,
 					desc: *mut DXGI_MODE_DESC1) -> HRESULT,
 				fn FindClosestMatchingMode1(mode_to_match: *const DXGI_MODE_DESC1,
@@ -348,12 +350,12 @@ IUnknownVtbl of () {
 				fn DuplicateOutput(device: *mut IUnknown,
 					output_duplication: *mut *mut IDXGIOutputDuplication) -> HRESULT,
 			} with heirs [
-				IDXGIOutput2Vtbl of IDXGIOutput2 {
+				IDXGIOutput2Vtbl of IDXGIOutput2, trait IDXGIOutput2T {
 					fn SupportsOverlay() -> BOOL,
 				}
 			]
 		]
-		IDXGIOutputDuplicationVtbl of IDXGIOutputDuplication {
+		IDXGIOutputDuplicationVtbl of IDXGIOutputDuplication, trait IDXGIOutputDuplicationT {
 			fn GetDesc(desc: *mut DXGI_OUTDUPL_DESC) -> (),
 			fn AcquireNextFrame(timeout_ms: UINT, frame_info: *mut DXGI_OUTDUPL_FRAME_INFO,
 				desktop_resource: *mut *mut IDXGIResource) -> HRESULT,
@@ -369,16 +371,16 @@ IUnknownVtbl of () {
 			fn ReleaseFrame() -> HRESULT,
 		}
 	]
-	IDXGIDebugVtbl of IDXGIDebug {
+	IDXGIDebugVtbl of IDXGIDebug, trait IDXGIDebugT {
 		fn ReportLiveObjects(apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT,
 	} with heirs [
-		IDXGIDebug1Vtbl of IDXGIDebug1 {
+		IDXGIDebug1Vtbl of IDXGIDebug1, trait IDXGIDebug1T {
 			fn EnableLeakTrackingForThread() -> (),
 			fn DisableLeakTrackingForThread() -> (),
 			fn IsLeakTrckingEnabledForThread() -> (),
 		}
 	]
-	IDXGIDecodeSwapChainVtbl of IDXGIDecodeSwapChain {
+	IDXGIDecodeSwapChainVtbl of IDXGIDecodeSwapChain, trait IDXGIDecodeSwapChainT {
 		fn GetColorSpace() -> DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS,
 		fn GetDestSize(width: *mut UINT, height: *mut UINT) -> HRESULT,
 		fn GetSourceRect(rect: *mut RECT) -> HRESULT,
@@ -389,11 +391,11 @@ IUnknownVtbl of () {
 		fn SetSourceRect(rect: *const RECT) -> HRESULT,
 		fn SetTargetRect(rect: *const RECT) -> HRESULT,
 	}
-	IDXGIDisplayControlVtbl of IDXGIDisplayControl {
+	IDXGIDisplayControlVtbl of IDXGIDisplayControl, trait IDXGIDisplayControlT {
 		fn IsStereoEnabled() -> BOOL,
 		fn SetStereoEnabled(enabled: BOOL) -> (),
 	}
-	IDXGIInfoQueueVtbl of IDXGIInfoQueue {
+	IDXGIInfoQueueVtbl of IDXGIInfoQueue, trait IDXGIInfoQueueT {
 		fn SetMessageCountLimit(producer: DXGI_DEBUG_ID, msg_count_limit: UINT64) -> HRESULT,
 		fn ClearStoredMessages(producer: DXGI_DEBUG_ID) -> (),
 		fn GetMessage(producer: DXGI_DEBUG_ID, message_i: UINT64,
@@ -447,7 +449,7 @@ IUnknownVtbl of () {
 		fn SetMuteDebugOutput(producer: DXGI_DEBUG_ID, mute: BOOL) -> (),
 		fn GetMuteDebugOutput(producer: DXGI_DEBUG_ID) -> BOOL,
 	}
-	IDXGISwapChainMediaVtbl of IDXGISwapChainMedia {
+	IDXGISwapChainMediaVtbl of IDXGISwapChainMedia, trait IDXGISwapChainMediaT {
 		fn GetFrameStatisticsMedia(stats: *mut DXGI_FRAME_STATISTICS_MEDIA) -> HRESULT,
 		fn SetPresentDuration(duration: UINT) -> HRESULT,
 		fn CheckPresentDurationSupport(desired_present_duration: UINT,

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//! Structures provided by DXGI. Structures are from DXGI 1.0, 1.1, and 1.2
+//! Structures provided by DXGI.
 //!
 //! # References
 //! [DXGI Structures, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471323(v=vs.85).aspx)
