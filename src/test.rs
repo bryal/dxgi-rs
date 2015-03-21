@@ -13,7 +13,9 @@ fn test() {
 
 	assert!(factory as usize != 0);
 
-	println!("IsCurrent: {}", c_mtdcall!(factory->IsCurrent()) != 0);
+	println!("IsCurrent: {}", c_mtdcall!(factory,->IsCurrent()) != 0);
+	assert_eq!(c_mtdcall!(factory,->AddRef()), 2);
+	assert_eq!(c_mtdcall!(factory,->Release()), 1);
 
 	}
 }

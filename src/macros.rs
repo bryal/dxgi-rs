@@ -51,22 +51,21 @@ macro_rules! c_vtable_actual {
 	([ ]; $($x:tt)*) => {};
 
 	([ $tablename:ident of $parent:ty { $($methods:tt)* } with heirs [ $($heirs:tt)* ]
-			$($rest:tt)*
+			$($siblings:tt)*
 		];
-		$($inh_methods:tt)*
-	) => {
-		c_vtable_struct!($tablename, $parent, $($methods)* $($inh_methods)*);
+		$($inh_methods:tt)* ) =>
+	{
+		c_vtable_struct!($tablename, $parent, $($inh_methods)* $($methods)* );
 
-		c_vtable_actual!( [ $($heirs)* ]; $($methods)* $($inh_methods)* );
-		c_vtable_actual!( [ $($rest)* ]; $($inh_methods)* );
+		c_vtable_actual!( [ $($heirs)* ]; $($inh_methods)* $($methods)* );
+		c_vtable_actual!( [ $($siblings)* ]; $($inh_methods)* );
 	};
 
-	([ $tablename:ident of $parent:ty { $($methods:tt)* } $($rest:tt)* ];
+	([ $tablename:ident of $parent:ty { $($methods:tt)* } $($siblings:tt)* ];
 		$($inh_methods:tt)*
 	) => {
-		c_vtable_struct!($tablename, $parent, $($methods)* $($inh_methods)*);
-
-		c_vtable_actual!( [ $($rest)* ]; $($inh_methods)* );
+		c_vtable_actual!( [ $tablename of $parent { $($methods)* } with heirs [ ] $($siblings)* ];
+			$($inh_methods)* );
 	};
 }
 
@@ -77,20 +76,21 @@ macro_rules! c_vtable {
 }
 
 /// Call a method of a C++ object represented as a C struct
+#[macro_export]
 macro_rules! c_mtdcall {
-	( $obj:ident->$method:ident( ) ) => {
-		(*(*$obj).vtable).$method.unwrap()($obj)
+	( $obj:expr,->$method:ident( ) ) => {
+		(*(*$obj).vtable).$method.unwrap()(&mut *$obj)
 	};
 
-	( $obj:ident->$method:ident($($args:expr),+) ) => {
-		(*(*$obj).vtable).$method.unwrap()($obj, $($args),*)
+	( $obj:expr,->$method:ident($($args:expr),+) ) => {
+		(*(*$obj).vtable).$method.unwrap()(&mut *$obj, $($args),*)
 	};
 
-	( $obj:ident.$method:ident( ) ) => {
+	( $obj:expr,.$method:ident( ) ) => {
 		(*$obj.vtable).$method.unwrap()(&mut $obj)
 	};
 
-	( $obj:ident.$method:ident($($args:expr),+) ) => {
+	( $obj:expr,.$method:ident($($args:expr),+) ) => {
 		(*$obj.vtable).$method.unwrap()(&mut $obj, $($args),*)
 	};
 }
@@ -147,7 +147,7 @@ mod test {
 			vtable: &mut OneTable{
 				one: Some(fone) } };
 
-		unsafe { assert_eq!(c_mtdcall!(one->one(1)), (*(*one).vtable).one.unwrap()(one, 1)); }
+		unsafe { assert_eq!(c_mtdcall!(one,->one(1)), (*(*one).vtable).one.unwrap()(one, 1)); }
 	}
 
 	#[test]
@@ -158,6 +158,6 @@ mod test {
 				two: Some(ftwo),
 				three: Some(fthree) } };
 		let v = 1;
-		assert_eq!(unsafe { c_mtdcall!(three.one(v)) + c_mtdcall!(three.three(v)) }, 1 + 3);
+		assert_eq!(unsafe { c_mtdcall!(three,.one(v)) + c_mtdcall!(three,.three(v)) }, 1 + 3);
 	}
 }
