@@ -23,7 +23,11 @@
 //! Structures provided by DXGI.
 //!
 //! # References
-//! [DXGI Structures, MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/ff471323(v=vs.85).aspx)
+//! [DXGI Structures, MSDN]
+//! (https://msdn.microsoft.com/en-us/library/windows/desktop/ff471323(v=vs.85).aspx)
+
+// TODO: verify that all struct fields are in the right order,
+// as that is the only thing that matters when doing FFI
 
 #![allow(non_snake_case, dead_code, non_camel_case_types)]
 

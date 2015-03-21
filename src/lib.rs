@@ -30,9 +30,10 @@ extern crate winapi;
 
 use libc::c_void;
 use winapi::{ REFIID, HRESULT };
-pub use interfaces::*;
-pub use structures::*;
 pub use constants::*;
+pub use enumerations::*;
+pub use structures::*;
+pub use interfaces::*;
 
 mod macros;
 pub mod structures;
