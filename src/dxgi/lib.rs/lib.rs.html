@@ -124,15 +124,15 @@
 
 <span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>;
 <span class='kw'>use</span> <span class='ident'>winapi</span>::{ <span class='ident'>REFIID</span>, <span class='ident'>HRESULT</span> };
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dxgi_interfaces</span>::<span class='op'>*</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dxgi_structures</span>::<span class='op'>*</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dxgi_constants</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>interfaces</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>constants</span>::<span class='op'>*</span>;
 
 <span class='kw'>mod</span> <span class='ident'>macros</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>dxgi_structures</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>dxgi_enumerations</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>dxgi_constants</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>dxgi_interfaces</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>structures</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>enumerations</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>constants</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>interfaces</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>test</span>;
