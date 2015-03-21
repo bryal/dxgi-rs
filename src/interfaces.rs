@@ -37,9 +37,9 @@ use winapi::{ HRESULT, ULONG, REFGUID,
 	DWORD, UINT64, LPCSTR,
 	SIZE_T, SECURITY_ATTRIBUTES };
 
-use dxgi_structures::*;
-use dxgi_enumerations::*;
-use dxgi_constants::*;
+use structures::*;
+use enumerations::*;
+use constants::*;
 
 #[repr(C)] pub struct IUnknown {
 	pub vtable: *mut IUnknownVtbl

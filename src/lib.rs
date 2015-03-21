@@ -30,15 +30,15 @@ extern crate winapi;
 
 use libc::c_void;
 use winapi::{ REFIID, HRESULT };
-pub use dxgi_interfaces::*;
-pub use dxgi_structures::*;
-pub use dxgi_constants::*;
+pub use interfaces::*;
+pub use structures::*;
+pub use constants::*;
 
 mod macros;
-pub mod dxgi_structures;
-pub mod dxgi_enumerations;
-pub mod dxgi_constants;
-pub mod dxgi_interfaces;
+pub mod structures;
+pub mod enumerations;
+pub mod constants;
+pub mod interfaces;
 
 #[cfg(test)]
 mod test;

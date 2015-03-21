@@ -34,8 +34,8 @@ use winapi::{ WCHAR, UINT, SIZE_T,
 	BYTE, HWND };
 use libc::{ c_char, c_float, c_int };
 
-use dxgi_constants::*;
-use dxgi_enumerations::*;
+use constants::*;
+use enumerations::*;
 
 pub type DXGI_INFO_QUEUE_MESSAGE_ID = c_int;
 
