@@ -94,25 +94,25 @@ macro_rules! impl_c_vtable_trait {
 /// Handle the `pub` keyword for vtable and trait, and "with heirs" phrase before main expansion
 #[macro_export]
 macro_rules! c_vtable_pre {
-	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
+	([ $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
 			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((), (), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
 			[ $($siblings)* ], $($inheritance)*);
 	};
-	([ pub $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
+	([ pub $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
 			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((pub), (), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
 			[ $($siblings)* ], $($inheritance)*);
 	};
-	([ $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+	([ $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
 			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((), (pub), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
 			[ $($siblings)* ], $($inheritance)*);
 	};
-	([ pub $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+	([ pub $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
 			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((pub), (pub), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
@@ -120,25 +120,25 @@ macro_rules! c_vtable_pre {
 	};
 
 	// No "with heirs"
-	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* } $($siblings:tt)* ];
+	([ $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* } $($siblings:tt)* ];
 		$($inheritance:tt)*) =>
 	{
 		c_vtable_main!((), (), $table, $parent, $traitname, { $($methods)* }, [ ],
 			[ $($siblings)* ], $($inheritance)*);
 	};
-	([ pub $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
+	([ pub $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
 		$($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((pub), (), $table, $parent, $traitname, { $($methods)* }, [ ],
 			[ $($siblings)* ], $($inheritance)*);
 	};
-	([ $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+	([ $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
 		$($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((), (pub), $table, $parent, $traitname, { $($methods)* }, [ ],
 			[ $($siblings)* ], $($inheritance)*);
 	};
-	([ pub $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+	([ pub $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
 		$($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
 		c_vtable_main!((pub), (pub), $table, $parent, $traitname, { $($methods)* }, [ ],
@@ -150,8 +150,21 @@ macro_rules! c_vtable_pre {
 
 #[macro_export]
 macro_rules! c_vtable_main {
+	// No name, _, given for vtable, and () given as parent type, so don't implement anything,
+	// just pass on methods to heirs.
+	// That no implementation is needed infers that no trait is needed as well, wherefore
+	// none is created, instead, the trait must be declared separately, or imported.
+	(($($tablepub:tt)*), ($($traitpub:tt)*), _, $parent:ty, $traitname:ident,
+		{ $($methods:tt)* }, [ $($heirs:tt)* ], [ $($siblings:tt)* ],
+		$(($inh_trait:ident, [ $($inh_methods:tt)* ]))*) =>
+	{
+		c_vtable_pre!([ $($heirs)* ];
+			$(($inh_trait, [ $($inh_methods)* ]))* ($traitname, [ $($methods)* ]));
+		c_vtable_pre!([ $($siblings)* ]; $(($inh_trait, [ $($inh_methods)* ]))*);
+	};
+
 	(($($tablepub:tt)*), ($($traitpub:tt)*), $table:ident, $parent:ty, $traitname:ident,
-		{ $($methods:tt)* }, [$($heirs:tt)*], [ $($siblings:tt)* ],
+		{ $($methods:tt)* }, [ $($heirs:tt)* ], [ $($siblings:tt)* ],
 		$(($inh_trait:ident, [ $($inh_methods:tt)* ]))*) =>
 	{
 		c_vtable_struct!(($($tablepub)*), $table, $parent, $($($inh_methods)*)* $($methods)* );
