@@ -26,53 +26,62 @@
 #![allow(dead_code)]
 
 /// Rust equivalent to windows C DEFINE_GUID macro
+#[macro_export]
 macro_rules! define_guid {
 	($name:ident, $d1:expr, $d2:expr, $d3:expr, $d4:expr) => {
 		pub const $name: GUID = GUID{ Data1: $d1, Data2: $d2, Data3: $d3, Data4: $d4 };
 	}
 }
 
+#[macro_export]
 macro_rules! c_vtable_struct {
 	( ) => { };
 
-	( $tablename:ident, $parent:ty, ) => { #[repr(C)] pub struct $tablename; };
+	( ($($tpub:ident)*), $tablename:ident, $parent:ty, ) => { #[repr(C)] $($tpub)* struct $tablename; };
 
-	( $tablename:ident, $parent:ty,
+	( ($($tpub:ident)*), $tablename:ident, $parent:ty,
 		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
 	{
-		#[repr(C)] pub struct $tablename {
+		#[repr(C)] $($tpub)* struct $tablename {
 			$( pub $methodname: Option<unsafe extern "system" fn(
 				this: *mut $parent, $($argname: $argtype),*) -> $rettype>, )*
 		}
 	}
 }
 
+#[macro_export]
 macro_rules! c_vtable_methods_to_trait {
-	($traitname:ident, [ ],
+	( ($($tpub:ident)*), $traitname:ident, [ ], ) =>
+	{
+		$($tpub)* trait $traitname { }
+	};
+
+	( ($($tpub:ident)*), $traitname:ident, [ ],
 		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
 	{
-		pub trait $traitname {
+		$($tpub)* trait $traitname {
 			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
 		}
 	};
 
-	($traitname:ident, [ $parent_trait:ident ],
+	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident ],
 		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
 	{
-		pub trait $traitname: $parent_trait {
+		$($tpub)* trait $traitname: $parent_trait {
 			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
 		}
 	};
 
-	($traitname:ident, [ $parent_trait:ident, $($parent_traits:ident),+ ],
+	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident, $($parent_traits:ident),+ ],
 		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
 	{
-		pub trait $traitname: $($parent_traits + )* $parent_trait {
+		$($tpub)* trait $traitname: $($parent_traits + )* $parent_trait {
 			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
 		}
 	};
 }
 
+#[macro_export]
 macro_rules! impl_c_vtable_trait {
 	($traitname:ident, $parent:ty,
 		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
@@ -87,34 +96,80 @@ macro_rules! impl_c_vtable_trait {
 	};
 }
 
-macro_rules! c_vtable_actual {
-	([ ]; $($x:tt)*) => {};
-
-	// ([structs to implement]; [these traits and create vtables for]; these methods)
+/// Handle the `pub` keyword for vtable and trait, and "with heirs" phrase before main expansion
+#[macro_export]
+macro_rules! c_vtable_pre {
 	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
-			with heirs [$($heirs:tt)*] $($siblings:tt)*
-		];
-		$(($inh_trait:ident, $($inh_methods:tt)*) )*) =>
+			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
 	{
-		c_vtable_struct!($table, $parent, $($($inh_methods)*)* $($methods)* );
-		c_vtable_methods_to_trait!($traitname, [ $($inh_trait),* ], $($methods)*);
+		c_vtable_main!((), (), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+	([ pub $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
+			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
+	{
+		c_vtable_main!((pub), (), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+	([ $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
+	{
+		c_vtable_main!((), (pub), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+	([ pub $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
+	{
+		c_vtable_main!((pub), (pub), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+
+	// No "with heirs"
+	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* } $($siblings:tt)* ];
+		$($inheritance:tt)*) =>
+	{
+		c_vtable_main!((), (), $table, $parent, $traitname, { $($methods)* }, [ ],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+	([ pub $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* }
+		$($siblings:tt)* ]; $($inheritance:tt)*) =>
+	{
+		c_vtable_main!((pub), (), $table, $parent, $traitname, { $($methods)* }, [ ],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+	([ $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+		$($siblings:tt)* ]; $($inheritance:tt)*) =>
+	{
+		c_vtable_main!((), (pub), $table, $parent, $traitname, { $($methods)* }, [ ],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+	([ pub $table:ident of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
+		$($siblings:tt)* ]; $($inheritance:tt)*) =>
+	{
+		c_vtable_main!((pub), (pub), $table, $parent, $traitname, { $($methods)* }, [ ],
+			[ $($siblings)* ], $($inheritance)*);
+	};
+
+	([ ]; $($x:tt)*) => { }
+}
+
+#[macro_export]
+macro_rules! c_vtable_main {
+	(($($tablepub:tt)*), ($($traitpub:tt)*), $table:ident, $parent:ty, $traitname:ident,
+		{ $($methods:tt)* }, [$($heirs:tt)*], [ $($siblings:tt)* ],
+		$(($inh_trait:ident, $($inh_methods:tt)*))*) =>
+	{
+		c_vtable_struct!(($($tablepub)*), $table, $parent, $($($inh_methods)*)* $($methods)* );
+		c_vtable_methods_to_trait!(($($traitpub)*), $traitname, [ $($inh_trait),* ], $($methods)*);
 
 		impl_c_vtable_trait!($traitname, $parent, $($methods)*);
 		$(
 			impl_c_vtable_trait!($inh_trait, $parent, $($inh_methods)*);
 		)*
 
-		c_vtable_actual!( [ $($heirs)* ];
-			$(($inh_trait, $($inh_methods)*) )* ($traitname, $($methods)*) );
-		c_vtable_actual!( [ $($siblings)* ]; $(($inh_trait, $($inh_methods)*) )* );
-	};
-
-	([ $table:ident of $parent:ty, trait $traitname:ident { $($methods:tt)* } $($siblings:tt)* ];
-		$($inheritance:tt)*) =>
-	{
-		c_vtable_actual!( [ $table of $parent, trait $traitname { $($methods)* } with heirs [ ]
-			$($siblings)* ];
-			$($inheritance)* );
+		c_vtable_pre!([ $($heirs)* ];
+			$(($inh_trait, $($inh_methods)*))* ($traitname, $($methods)*));
+		c_vtable_pre!([ $($siblings)* ]; $(($inh_trait, $($inh_methods)*))*);
 	};
 }
 
@@ -202,7 +257,7 @@ macro_rules! c_vtable_actual {
 #[macro_export]
 macro_rules! c_vtable {
 	($($table:tt)*) => {
-		c_vtable_actual!([ $($table)* ];);
+		c_vtable_pre!([ $($table)* ];);
 	}
 }
 
