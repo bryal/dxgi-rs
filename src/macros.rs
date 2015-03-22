@@ -51,13 +51,8 @@ macro_rules! c_vtable_struct {
 
 #[macro_export]
 macro_rules! c_vtable_methods_to_trait {
-	( ($($tpub:ident)*), $traitname:ident, [ ], ) =>
-	{
-		$($tpub)* trait $traitname { }
-	};
-
 	( ($($tpub:ident)*), $traitname:ident, [ ],
-		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
 	{
 		$($tpub)* trait $traitname {
 			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
@@ -65,7 +60,7 @@ macro_rules! c_vtable_methods_to_trait {
 	};
 
 	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident ],
-		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
 	{
 		$($tpub)* trait $traitname: $parent_trait {
 			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
@@ -73,7 +68,7 @@ macro_rules! c_vtable_methods_to_trait {
 	};
 
 	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident, $($parent_traits:ident),+ ],
-		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
 	{
 		$($tpub)* trait $traitname: $($parent_traits + )* $parent_trait {
 			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
@@ -84,7 +79,7 @@ macro_rules! c_vtable_methods_to_trait {
 #[macro_export]
 macro_rules! impl_c_vtable_trait {
 	($traitname:ident, $parent:ty,
-		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
+		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
 	{
 		impl $traitname for $parent {
 			$(
@@ -157,19 +152,20 @@ macro_rules! c_vtable_pre {
 macro_rules! c_vtable_main {
 	(($($tablepub:tt)*), ($($traitpub:tt)*), $table:ident, $parent:ty, $traitname:ident,
 		{ $($methods:tt)* }, [$($heirs:tt)*], [ $($siblings:tt)* ],
-		$(($inh_trait:ident, $($inh_methods:tt)*))*) =>
+		$(($inh_trait:ident, [ $($inh_methods:tt)* ]))*) =>
 	{
 		c_vtable_struct!(($($tablepub)*), $table, $parent, $($($inh_methods)*)* $($methods)* );
-		c_vtable_methods_to_trait!(($($traitpub)*), $traitname, [ $($inh_trait),* ], $($methods)*);
+		c_vtable_methods_to_trait!(($($traitpub)*), $traitname, [ $($inh_trait),* ],
+			[ $($methods)* ]);
 
-		impl_c_vtable_trait!($traitname, $parent, $($methods)*);
+		impl_c_vtable_trait!($traitname, $parent, [ $($methods)* ]);
 		$(
-			impl_c_vtable_trait!($inh_trait, $parent, $($inh_methods)*);
+			impl_c_vtable_trait!($inh_trait, $parent, [ $($inh_methods)* ]);
 		)*
 
 		c_vtable_pre!([ $($heirs)* ];
-			$(($inh_trait, $($inh_methods)*))* ($traitname, $($methods)*));
-		c_vtable_pre!([ $($siblings)* ]; $(($inh_trait, $($inh_methods)*))*);
+			$(($inh_trait, [ $($inh_methods)* ]))* ($traitname, [ $($methods)* ]));
+		c_vtable_pre!([ $($siblings)* ]; $(($inh_trait, [ $($inh_methods)* ]))*);
 	};
 }
 
