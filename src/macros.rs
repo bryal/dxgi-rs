@@ -28,8 +28,11 @@
 /// Rust equivalent to windows C DEFINE_GUID macro
 #[macro_export]
 macro_rules! define_guid {
-	($name:ident, $d1:expr, $d2:expr, $d3:expr, $d4:expr) => {
-		pub const $name: GUID = GUID{ Data1: $d1, Data2: $d2, Data3: $d3, Data4: $d4 };
+	($name:ident, $d1:expr, $d2:expr, $d3:expr,
+		$d4:expr, $d5:expr, $d6:expr, $d7:expr, $d8:expr, $d9:expr, $d10:expr, $d11:expr) =>
+	{
+		pub const $name: GUID = GUID{ Data1: $d1, Data2: $d2, Data3: $d3,
+			Data4: [$d4, $d5, $d6, $d7, $d8, $d9, $d10, $d11] };
 	}
 }
 
