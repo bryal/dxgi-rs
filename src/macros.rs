@@ -334,13 +334,13 @@ mod test {
 	// TwoTable => one, two
 	// ThreeTable => one, two, three
 
-	extern "system" fn fone(_: *mut Three, a: u32) -> u32 { a * 1 }
-	extern "system" fn ftwo(_: *mut Three, a: u32) -> u32 { a * 2 }
-	extern "system" fn fthree(_: *mut Three, a: u32) -> u32 { a * 3 }
+	unsafe extern "system" fn fone(_: *mut Three, a: u32) -> u32 { a * 1 }
+	unsafe extern "system" fn ftwo(_: *mut Three, a: u32) -> u32 { a * 2 }
+	unsafe extern "system" fn fthree(_: *mut Three, a: u32) -> u32 { a * 3 }
 
 	#[test]
 	fn c_method_call_macro() {
-		extern "system" fn fone(_: *mut One, _: u32) -> u32 { 1337 }
+		unsafe extern "system" fn fone(_: *mut One, _: u32) -> u32 { 1337 }
 		let one: *mut _ = &mut One{
 			vtable: &mut OneTable{
 				one: Some(fone) } };
