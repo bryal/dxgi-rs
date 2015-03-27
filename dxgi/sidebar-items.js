@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["CreateDXGIFactory1",""]],"mod":[["constants","Constants and related typedefs provided by DXGI"],["enumerations","Enumerations provided by DXGI."],["interfaces","Interfaces provided by DXGI."],["structures","Structures provided by DXGI."]]});
