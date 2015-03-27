@@ -70,12 +70,11 @@ macro_rules! c_vtable_methods_to_trait {
 		}
 	};
 
+	// Get rid of all excessive trait bounds. Only need direct parent trait
 	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident, $($parent_traits:ident),+ ],
-		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
+		[ $($fns:tt)* ] ) =>
 	{
-		$($tpub)* trait $traitname: $($parent_traits + )* $parent_trait {
-			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
-		}
+		c_vtable_methods_to_trait!(($($tpub)*), $traitname, [ $($parent_traits),* ], [ $($fns)* ]);
 	};
 }
 
