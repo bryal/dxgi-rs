@@ -143,7 +143,7 @@ pub IUnknownVtbl of IUnknown, pub trait IUnknownT {
 			pub IDXGISurfaceVtbl of IDXGISurface, pub trait IDXGISurfaceT {
 				fn GetDesc(desc: *mut DXGI_SURFACE_DESC) -> HRESULT,
 				fn Map(locked_rect: *mut DXGI_MAPPED_RECT, map_flags: UINT) -> HRESULT,
-				fn UnMap() -> HRESULT,
+				fn Unmap() -> HRESULT,
 			} with heirs [
 				pub IDXGISurface1Vtbl of IDXGISurface1, pub trait IDXGISurface1T {
 					fn GetDC(discars: BOOL, dirtyrect: *mut RECT) -> HRESULT,

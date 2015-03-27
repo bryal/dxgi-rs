@@ -153,7 +153,7 @@ pub type DXGI_INFO_QUEUE_MESSAGE_ID = c_int;
 
 #[repr(C)] pub struct DXGI_MAPPED_RECT {
 	pub Pitch: INT,
-	pub pBits: BYTE,
+	pub pBits: *mut BYTE,
 }
 
 #[repr(C)] pub struct DXGI_MODE_DESC {
