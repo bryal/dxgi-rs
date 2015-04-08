@@ -23,13 +23,10 @@
 //! FFI bindings to DXGI
 
 #![cfg(windows)]
-#![feature(libc)]
 
-extern crate libc;
 extern crate winapi;
 
-use libc::c_void;
-use winapi::{ REFIID, HRESULT };
+use winapi::{ REFIID, HRESULT, UINT, c_void };
 pub use constants::*;
 pub use enumerations::*;
 pub use structures::*;
@@ -45,8 +42,10 @@ pub mod interfaces;
 mod test;
 
 #[link(name="dxgi")]
-extern "C" {
-	#![allow(dead_code)]
-
+extern "system" {
+	pub fn CreateDXGIFactory(riid: REFIID, ppFactory: *mut *mut c_void) -> HRESULT;
 	pub fn CreateDXGIFactory1(riid: REFIID, ppFactory: *mut *mut c_void) -> HRESULT;
+	pub fn CreateDXGIFactory2(Flags: UINT, riid: REFIID, ppFactory: *mut *mut c_void) -> HRESULT;
+	pub fn DXGIGetDebugInterface(riid: REFIID, ppDebug: *mut *mut c_void) -> HRESULT;
+	pub fn DXGIGetDebugInterface1(Flags: UINT, riid: REFIID, pDebug: *mut *mut c_void) -> HRESULT;
 }

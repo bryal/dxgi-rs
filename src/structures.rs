@@ -35,8 +35,8 @@ use winapi::{ WCHAR, UINT, SIZE_T,
 	LUID, LARGE_INTEGER, BOOL,
 	FLOAT, RECT, HMONITOR,
 	POINT, HANDLE, INT,
-	BYTE, HWND };
-use libc::{ c_char, c_float, c_int };
+	BYTE, HWND, c_char,
+	c_float, c_int };
 
 use constants::*;
 use enumerations::*;

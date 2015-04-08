@@ -28,14 +28,13 @@
 
 #![allow(non_snake_case, dead_code)]
 
-use libc::{ c_void };
 use winapi::{ HRESULT, ULONG, REFGUID,
 	UINT, LPCWSTR, REFIID,
 	LARGE_INTEGER, GUID, HWND,
 	HMODULE, BOOL, INT,
 	HANDLE, RECT, LUID,
 	DWORD, UINT64, LPCSTR,
-	SIZE_T, SECURITY_ATTRIBUTES };
+	SIZE_T, SECURITY_ATTRIBUTES, c_void };
 
 use structures::*;
 use enumerations::*;

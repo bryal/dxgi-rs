@@ -28,21 +28,11 @@
 #![allow(non_snake_case, dead_code, non_upper_case_globals, non_camel_case_types)]
 
 use winapi::{ GUID, ULONG, UINT };
-pub use winapi::winerror::{ DXGI_ERROR_DEVICE_HUNG, DXGI_ERROR_DEVICE_REMOVED,
-	DXGI_ERROR_DEVICE_RESET, DXGI_ERROR_DRIVER_INTERNAL_ERROR,
-	DXGI_ERROR_FRAME_STATISTICS_DISJOINT, DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE,
-	DXGI_ERROR_INVALID_CALL, DXGI_ERROR_MORE_DATA, DXGI_ERROR_NONEXCLUSIVE,
-	DXGI_ERROR_NOT_CURRENTLY_AVAILABLE, DXGI_ERROR_NOT_FOUND,
-	DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED, DXGI_ERROR_REMOTE_OUTOFMEMORY,
-	DXGI_ERROR_WAS_STILL_DRAWING, DXGI_ERROR_UNSUPPORTED, DXGI_ERROR_ACCESS_LOST,
-	DXGI_ERROR_WAIT_TIMEOUT, DXGI_ERROR_SESSION_DISCONNECTED,
-	DXGI_ERROR_RESTRICT_TO_OUTPUT_STALE, DXGI_ERROR_CANNOT_PROTECT_CONTENT,
-	DXGI_ERROR_ACCESS_DENIED, DXGI_ERROR_NAME_ALREADY_EXISTS, S_OK };
-pub use winapi::winerror::{ DXGI_STATUS_OCCLUDED, DXGI_STATUS_MODE_CHANGED,
-	DXGI_STATUS_MODE_CHANGE_IN_PROGRESS };
+pub use winapi::winerror::*;
 
 pub type DXGI_DEBUG_ID = GUID;
 
+// DXGI_DEBUG_ID GUIDs
 define_guid!(DXGI_DEBUG_ALL,
 	0xe48ae283, 0xda80, 0x490b, 0x87, 0xe6, 0x43, 0xe9, 0xa9, 0xcf, 0xda, 0x8);
 define_guid!(DXGI_DEBUG_DX,
@@ -54,6 +44,7 @@ define_guid!(DXGI_DEBUG_APP,
 define_guid!(DXGI_DEBUG_D3D11,
 	0x4b99317b, 0xac39, 0x4aa6, 0xbb, 0xb, 0xba, 0xa0, 0x47, 0x84, 0x79, 0x8f);
 
+// DXGI 1.0 / 1.1 GUIDs
 define_guid!(IID_IDXGIObject,
 	0xaec22fb8, 0x76f3, 0x4639, 0x9b, 0xe0, 0x28, 0xeb, 0x43, 0xa6, 0x7a, 0x2e);
 define_guid!(IID_IDXGIDeviceSubObject,
@@ -83,6 +74,7 @@ define_guid!(IID_IDXGIAdapter1,
 define_guid!(IID_IDXGIDevice1,
 	0x77db970f, 0x6276, 0x48ba, 0xba, 0x28, 0x07, 0x01, 0x43, 0xb4, 0x39, 0x2c);
 
+// DXGI 1.2 GUIDs
 define_guid!(IID_IDXGIDisplayControl,
 	0xea9dbf1a, 0xc88e, 0x4486, 0x85, 0x4a, 0x98, 0xaa, 0x01, 0x38, 0xf3, 0x0c);
 define_guid!(IID_IDXGIOutputDuplication,
@@ -102,6 +94,7 @@ define_guid!(IID_IDXGIAdapter2,
 define_guid!(IID_IDXGIOutput1,
 	0x00cddea8, 0x939b, 0x4b83, 0xa3, 0x40, 0xa6, 0x85, 0x22, 0x66, 0x66, 0xcc);
 
+// DXGI 1.3 GUIDs
 define_guid!(IID_IDXGIDevice3,
 	0x6007896c, 0x3244, 0x4afd, 0xbf, 0x18, 0xa6, 0xd3, 0xbe, 0xda, 0x50, 0x23);
 define_guid!(IID_IDXGISwapChain2,
@@ -118,7 +111,6 @@ define_guid!(IID_IDXGISwapChainMedia,
 	0xdd95b90b, 0xf05f, 0x4f6a, 0xbd, 0x65, 0x25, 0xbf, 0xb2, 0x64, 0xbd, 0x84);
 define_guid!(IID_IDXGIOutput3,
 	0x8a6bb301, 0x7e7e, 0x41F4, 0xa8, 0xe0, 0x5b, 0x32, 0xf7, 0xf9, 0x9b, 0x18);
-
 
 
 pub const DXGI_ENUM_MODES_INTERLACED: ULONG = 1;

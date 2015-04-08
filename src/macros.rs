@@ -272,7 +272,7 @@ macro_rules! c_vtable {
 	}
 }
 
-/// Call a method of a C++ object represented as a C struct
+/// Call a method of a C++ object represented as a C struct, without the need for wrapper traits
 #[macro_export]
 macro_rules! c_mtdcall {
 	( $obj:expr,->$method:ident( ) ) => {
