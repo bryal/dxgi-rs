@@ -1,4 +1,4 @@
-use super::{ IDXGIFactory1, IUnknownT, IID_IDXGIFactory1, CreateDXGIFactory1 };
+use super::{ IDXGIFactory1, IDXGIFactory1T, IUnknownT, IID_IDXGIFactory1, CreateDXGIFactory1 };
 use std::ptr;
 
 #[test]
@@ -11,12 +11,10 @@ fn test() {
 
 		assert!(factory as usize != 0);
 
-		println!("IsCurrent: {}", c_mtdcall!(factory,->IsCurrent()) != 0);
+		println!("IsCurrent: {}", (*factory).IsCurrent() != 0);
 
-		assert_eq!(c_mtdcall!(factory,->AddRef()), 2);
-		assert_eq!((*factory).AddRef(), 3);
+		assert_eq!((*factory).AddRef(), 2);
 
-		assert_eq!(c_mtdcall!(factory,->Release()), 2);
 		assert_eq!((*factory).Release(), 1);
 	}
 }

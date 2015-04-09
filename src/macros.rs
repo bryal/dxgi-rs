@@ -36,6 +36,7 @@ macro_rules! define_guid {
 	}
 }
 
+/// Helper macro. Construct C struct representing C++ method vtable
 #[macro_export]
 macro_rules! c_vtable_struct {
 	( ) => { };
@@ -52,6 +53,8 @@ macro_rules! c_vtable_struct {
 	}
 }
 
+/// Helper macro. Construct a trait with the methods of the C++ interface. Removes the need to
+/// manually call the functions of a C vtable struct when forking with C++ class representations
 #[macro_export]
 macro_rules! c_vtable_methods_to_trait {
 	( ($($tpub:ident)*), $traitname:ident, [ ],
@@ -78,6 +81,7 @@ macro_rules! c_vtable_methods_to_trait {
 	};
 }
 
+/// Helper macro. Implement the trait representing the class methods for the C vtable
 #[macro_export]
 macro_rules! impl_c_vtable_trait {
 	($traitname:ident, $parent:ty,
@@ -86,14 +90,15 @@ macro_rules! impl_c_vtable_trait {
 		impl $traitname for $parent {
 			$(
 				fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype {
-					unsafe { c_mtdcall!(self,->$methodname($($argname),*)) }
+					unsafe { (*self.vtable).$methodname.unwrap()(self, $($argname),*) }
 				}
 			)*
 		}
 	};
 }
 
-/// Handle the `pub` keyword for vtable and trait, and "with heirs" phrase before main expansion
+/// Helper macro. Deconstruct some syntax before actually doing anything.
+/// Handle the `pub` keyword for vtable and trait, and "with heirs" phrase
 #[macro_export]
 macro_rules! c_vtable_pre {
 	([ $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
@@ -150,6 +155,7 @@ macro_rules! c_vtable_pre {
 	([ ]; $($x:tt)*) => { }
 }
 
+/// Helper macro. Actually construct the traits, vtables, and manage the inheritance
 #[macro_export]
 macro_rules! c_vtable_main {
 	// No name, _, given for vtable, and () given as parent type, so don't implement anything,
@@ -272,26 +278,6 @@ macro_rules! c_vtable {
 	}
 }
 
-/// Call a method of a C++ object represented as a C struct, without the need for wrapper traits
-#[macro_export]
-macro_rules! c_mtdcall {
-	( $obj:expr,->$method:ident( ) ) => {
-		(*(*$obj).vtable).$method.unwrap()(&mut *$obj)
-	};
-
-	( $obj:expr,->$method:ident($($args:expr),+) ) => {
-		(*(*$obj).vtable).$method.unwrap()(&mut *$obj, $($args),*)
-	};
-
-	( $obj:expr,.$method:ident( ) ) => {
-		(*$obj.vtable).$method.unwrap()(&mut $obj)
-	};
-
-	( $obj:expr,.$method:ident($($args:expr),+) ) => {
-		(*$obj.vtable).$method.unwrap()(&mut $obj, $($args),*)
-	};
-}
-
 #[cfg(test)]
 mod test {
 	struct One {
@@ -338,16 +324,6 @@ mod test {
 	unsafe extern "system" fn fthree(_: *mut Three, a: u32) -> u32 { a * 3 }
 
 	#[test]
-	fn c_method_call_macro() {
-		unsafe extern "system" fn fone(_: *mut One, _: u32) -> u32 { 1337 }
-		let one: *mut _ = &mut One{
-			vtable: &mut OneTable{
-				one: Some(fone) } };
-
-		unsafe { assert_eq!(c_mtdcall!(one,->one(1)), (*(*one).vtable).one.unwrap()(one, 1)); }
-	}
-
-	#[test]
 	fn three_table() {
 		let mut three = Three{
 			vtable: &mut ThreeTable{
@@ -355,6 +331,10 @@ mod test {
 				two: Some(ftwo),
 				three: Some(fthree) } };
 		let v = 1;
-		assert_eq!(unsafe { c_mtdcall!(three,.one(v)) + c_mtdcall!(three,.three(v)) }, 1 + 3);
+		unsafe {
+			assert_eq!((*three.vtable).one.unwrap()(&mut three, v) +
+				(*three.vtable).three.unwrap()(&mut three, v),
+				1 + 3);
+		}
 	}
 }
