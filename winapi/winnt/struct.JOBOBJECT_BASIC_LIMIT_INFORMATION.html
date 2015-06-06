@@ -41,9 +41,11 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>winnt</a>::<wbr><a class='struct' href=''>JOBOBJECT_BASIC_LIMIT_INFORMATION</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-66675' href='../../src/winapi/winnt.rs.html#269-279'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>winnt</a>::<wbr><a class='struct' href=''>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-84778' class='srclink' href='../../src/winapi/winnt.rs.html#269-279' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct JOBOBJECT_BASIC_LIMIT_INFORMATION {
     pub PerProcessUserTimeLimit: <a class='type' href='../../winapi/type.LARGE_INTEGER.html' title='winapi::LARGE_INTEGER'>LARGE_INTEGER</a>,
     pub PerJobUserTimeLimit: <a class='type' href='../../winapi/type.LARGE_INTEGER.html' title='winapi::LARGE_INTEGER'>LARGE_INTEGER</a>,
@@ -55,9 +57,18 @@
     pub PriorityClass: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
     pub SchedulingClass: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
 }</pre><h2 class='fields'>Fields</h2>
-<table><tr><td id='structfield.PerProcessUserTimeLimit'><a class='stability Unmarked' title='No stability level'></a><code>PerProcessUserTimeLimit</code></td><td></td></tr><tr><td id='structfield.PerJobUserTimeLimit'><a class='stability Unmarked' title='No stability level'></a><code>PerJobUserTimeLimit</code></td><td></td></tr><tr><td id='structfield.LimitFlags'><a class='stability Unmarked' title='No stability level'></a><code>LimitFlags</code></td><td></td></tr><tr><td id='structfield.MinimumWorkingSetSize'><a class='stability Unmarked' title='No stability level'></a><code>MinimumWorkingSetSize</code></td><td></td></tr><tr><td id='structfield.MaximumWorkingSetSize'><a class='stability Unmarked' title='No stability level'></a><code>MaximumWorkingSetSize</code></td><td></td></tr><tr><td id='structfield.ActiveProcessLimit'><a class='stability Unmarked' title='No stability level'></a><code>ActiveProcessLimit</code></td><td></td></tr><tr><td id='structfield.Affinity'><a class='stability Unmarked' title='No stability level'></a><code>Affinity</code></td><td></td></tr><tr><td id='structfield.PriorityClass'><a class='stability Unmarked' title='No stability level'></a><code>PriorityClass</code></td><td></td></tr><tr><td id='structfield.SchedulingClass'><a class='stability Unmarked' title='No stability level'></a><code>SchedulingClass</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h3><div class='impl-items'></div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h4>
-<h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+<table><tr class='stab '>
+                                  <td id='structfield.PerProcessUserTimeLimit'><code>PerProcessUserTimeLimit</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.PerJobUserTimeLimit'><code>PerJobUserTimeLimit</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.LimitFlags'><code>LimitFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.MinimumWorkingSetSize'><code>MinimumWorkingSetSize</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.MaximumWorkingSetSize'><code>MaximumWorkingSetSize</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ActiveProcessLimit'><code>ActiveProcessLimit</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Affinity'><code>Affinity</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.PriorityClass'><code>PriorityClass</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SchedulingClass'><code>SchedulingClass</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/winnt/struct.JOBOBJECT_BASIC_LIMIT_INFORMATION.html' title='winapi::winnt::JOBOBJECT_BASIC_LIMIT_INFORMATION'>JOBOBJECT_BASIC_LIMIT_INFORMATION</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -90,6 +101,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>
