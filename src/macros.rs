@@ -23,7 +23,7 @@
 //! Simplify interfacing to C vtable representation of C++ classes that make use of inheritance
 
 #![macro_use]
-#![allow(dead_code)]
+#![allow(dead_code, non_snake_case)]
 
 /// Rust equivalent to windows C DEFINE_GUID macro
 #[macro_export]
@@ -36,305 +36,118 @@ macro_rules! define_guid {
 	}
 }
 
-/// Helper macro. Construct C struct representing C++ method vtable
 #[macro_export]
-macro_rules! c_vtable_struct {
-	( ) => { };
-
-	( ($($tpub:ident)*), $tablename:ident, $parent:ty, ) => { #[repr(C)] $($tpub)* struct $tablename; };
-
-	( ($($tpub:ident)*), $tablename:ident, $parent:ty,
-		$(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)+ ) =>
-	{
-		#[repr(C)] $($tpub)* struct $tablename {
-			$( pub $methodname: Option<unsafe extern "system" fn(
-				this: *mut $parent, $($argname: $argtype),*) -> $rettype>, )*
+macro_rules! interface {
+	(
+		$interface:ident ($vtbl:ident) {$(
+			fn $method:ident(&mut self $(,$arg:ident : $argty:ty)*) -> $retty:ty
+		),*}
+	) => {
+		#[repr(C)]
+		pub struct $vtbl {
+			$(pub $method:
+				Option<unsafe extern "system" fn(This: *mut $interface $(,$arg: $argty)*) -> $retty>
+			),*
 		}
-	}
-}
-
-/// Helper macro. Construct a trait with the methods of the C++ interface. Removes the need to
-/// manually call the functions of a C vtable struct when forking with C++ class representations
-#[macro_export]
-macro_rules! c_vtable_methods_to_trait {
-	( ($($tpub:ident)*), $traitname:ident, [ ],
-		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
-	{
-		$($tpub)* trait $traitname {
-			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
+		#[repr(C)]
+		pub struct $interface {
+			pub lpVtbl: *const $vtbl
+		}
+		impl $interface {
+			$(pub unsafe fn $method(&mut self $(,$arg: $argty)*) -> $retty {
+				((*self.lpVtbl).$method.unwrap())(self $(,$arg)*)
+			})*
 		}
 	};
 
-	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident ],
-		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
-	{
-		$($tpub)* trait $traitname: $parent_trait {
-			$(fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype;)*
+	(
+		$interface:ident ($vtbl:ident) : $pinterface:ident ($pvtbl:ident) {$(
+			fn $method:ident(&mut self $(,$arg:ident : $argty:ty)*) -> $retty:ty
+		),*}
+	) => {
+		#[repr(C)]
+		pub struct $vtbl {
+			pub parent: $pvtbl,
+			$(pub $method:
+				Option<unsafe extern "system" fn(This: *mut $interface $(,$arg: $argty)*) -> $retty>
+			),*
 		}
-	};
-
-	// Get rid of all excessive trait bounds. Only need direct parent trait
-	( ($($tpub:ident)*), $traitname:ident, [ $parent_trait:ident, $($parent_traits:ident),+ ],
-		[ $($fns:tt)* ] ) =>
-	{
-		c_vtable_methods_to_trait!(($($tpub)*), $traitname, [ $($parent_traits),* ], [ $($fns)* ]);
-	};
-}
-
-/// Helper macro. Implement the trait representing the class methods for the C vtable
-#[macro_export]
-macro_rules! impl_c_vtable_trait {
-	($traitname:ident, $parent:ty,
-		[ $(fn $methodname:ident($($argname:ident: $argtype:ty),*) -> $rettype:ty,)* ] ) =>
-	{
-		impl $traitname for $parent {
-			$(
-				fn $methodname(&mut self, $($argname: $argtype),*) -> $rettype {
-					unsafe { (*self.vtable).$methodname.unwrap()(self, $($argname),*) }
-				}
-			)*
+		#[repr(C)]
+		pub struct $interface {
+			pub lpVtbl: *const $vtbl
+		}
+		impl $interface {
+			$(pub unsafe fn $method(&mut self $(,$arg: $argty)*) -> $retty {
+				((*self.lpVtbl).$method.unwrap())(self $(,$arg)*)
+			})*
+		}
+		impl ::std::ops::Deref for $interface {
+			type Target = $pinterface;
+			fn deref(&self) -> &$pinterface {
+				unsafe { ::std::mem::transmute(self) }
+			}
+		}
+		impl ::std::ops::DerefMut for $interface {
+			fn deref_mut(&mut self) -> &mut $pinterface {
+				unsafe { ::std::mem::transmute(self) }
+			}
 		}
 	};
 }
 
-/// Helper macro. Deconstruct some syntax before actually doing anything.
-/// Handle the `pub` keyword for vtable and trait, and "with heirs" phrase
 #[macro_export]
-macro_rules! c_vtable_pre {
-	([ $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
-			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((), (), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
-			[ $($siblings)* ], $($inheritance)*);
+macro_rules! com_interface {
+	(
+		$interface:ident ($vtbl:ident) : $pinterface:ident ($pvtbl:ident) {$(
+			fn $method:ident(&mut self $(,$arg:ident : $argty:ty)*) -> $retty:ty
+		),*}
+	) => {
+		#[repr(C)]
+		pub struct $vtbl {
+			pub parent: $pvtbl,
+			$(pub $method:
+				Option<unsafe extern "system" fn(This: *mut $interface $(,$arg: $argty)*) -> $retty>
+			),*
+		}
+		#[repr(C)]
+		pub struct $interface {
+			pub lpVtbl: *const $vtbl
+		}
+		impl $interface {
+			$(pub unsafe fn $method(&mut self $(,$arg: $argty)*) -> $retty {
+				((*self.lpVtbl).$method.unwrap())(self $(,$arg)*)
+			})*
+		}
+		impl ::std::ops::Deref for $interface {
+			type Target = $pinterface;
+			fn deref(&self) -> &$pinterface {
+				unsafe { ::std::mem::transmute(self) }
+			}
+		}
+		impl ::std::ops::DerefMut for $interface {
+			fn deref_mut(&mut self) -> &mut $pinterface {
+				unsafe { ::std::mem::transmute(self) }
+			}
+		}
+		impl COMInterface for $interface {
+			fn i_unknown(&self) -> &IUnknown { &*self }
+			fn i_unknown_mut(&mut self) -> &mut IUnknown { &mut *self }
+		}
 	};
-	([ pub $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
-			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((pub), (), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-	([ $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
-			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((), (pub), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-	([ pub $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
-			with heirs [$($heirs:tt)*] $($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((pub), (pub), $table, $parent, $traitname, { $($methods)* }, [$($heirs)*],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-
-	// No "with heirs"
-	([ $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* } $($siblings:tt)* ];
-		$($inheritance:tt)*) =>
-	{
-		c_vtable_main!((), (), $table, $parent, $traitname, { $($methods)* }, [ ],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-	([ pub $table:tt of $parent:ty, trait $traitname:ident { $($methods:tt)* }
-		$($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((pub), (), $table, $parent, $traitname, { $($methods)* }, [ ],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-	([ $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
-		$($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((), (pub), $table, $parent, $traitname, { $($methods)* }, [ ],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-	([ pub $table:tt of $parent:ty, pub trait $traitname:ident { $($methods:tt)* }
-		$($siblings:tt)* ]; $($inheritance:tt)*) =>
-	{
-		c_vtable_main!((pub), (pub), $table, $parent, $traitname, { $($methods)* }, [ ],
-			[ $($siblings)* ], $($inheritance)*);
-	};
-
-	([ ]; $($x:tt)*) => { }
-}
-
-/// Helper macro. Actually construct the traits, vtables, and manage the inheritance
-#[macro_export]
-macro_rules! c_vtable_main {
-	// No name, _, given for vtable, and () given as parent type, so don't implement anything,
-	// just pass on methods to heirs.
-	// That no implementation is needed infers that no trait is needed as well, wherefore
-	// none is created, instead, the trait must be declared separately, or imported.
-	(($($tablepub:tt)*), ($($traitpub:tt)*), _, $parent:ty, $traitname:ident,
-		{ $($methods:tt)* }, [ $($heirs:tt)* ], [ $($siblings:tt)* ],
-		$(($inh_trait:ident, [ $($inh_methods:tt)* ]))*) =>
-	{
-		c_vtable_pre!([ $($heirs)* ];
-			$(($inh_trait, [ $($inh_methods)* ]))* ($traitname, [ $($methods)* ]));
-		c_vtable_pre!([ $($siblings)* ]; $(($inh_trait, [ $($inh_methods)* ]))*);
-	};
-
-	(($($tablepub:tt)*), ($($traitpub:tt)*), $table:ident, $parent:ty, $traitname:ident,
-		{ $($methods:tt)* }, [ $($heirs:tt)* ], [ $($siblings:tt)* ],
-		$(($inh_trait:ident, [ $($inh_methods:tt)* ]))*) =>
-	{
-		c_vtable_struct!(($($tablepub)*), $table, $parent, $($($inh_methods)*)* $($methods)* );
-		c_vtable_methods_to_trait!(($($traitpub)*), $traitname, [ $($inh_trait),* ],
-			[ $($methods)* ]);
-
-		impl_c_vtable_trait!($traitname, $parent, [ $($methods)* ]);
-		$(
-			impl_c_vtable_trait!($inh_trait, $parent, [ $($inh_methods)* ]);
-		)*
-
-		c_vtable_pre!([ $($heirs)* ];
-			$(($inh_trait, [ $($inh_methods)* ]))* ($traitname, [ $($methods)* ]));
-		c_vtable_pre!([ $($siblings)* ]; $(($inh_trait, [ $($inh_methods)* ]))*);
-	};
-}
-
-/// Macro used to make making bindings for C representations of C++ classes more convenient.
-///
-/// This macro, through `c_vtable_actual!`, also provides traits to make interfacing with rust code
-/// easier.
-///
-/// This:
-///
-/// ```rust,ignore
-/// c_vtable!(
-/// IUnknownVtbl of IUnknown, trait IUnknownT { 
-///     fn QueryInterface(riid: REFIID, object: *mut *mut c_void) -> HRESULT,
-///     fn AddRef() -> ULONG,
-///     fn Release() -> ULONG,
-/// } with heirs [
-///     IDXGIDebugVtbl of IDXGIDebug, trait IDXGIDebugT {
-///         fn ReportLiveObjects(apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT,
-///     }
-/// ]);
-/// ```
-///
-/// Expands to this:
-///
-/// ```rust,ignore
-/// #[repr(C)]
-/// pub struct IUnknownVtbl {
-///     pub QueryInterface: Option<unsafe extern "system" fn(this: *mut IUnknown, riid: REFIID,
-///         object: *mut *mut c_void) -> HRESULT>,
-///     pub AddRef: Option<unsafe extern "system" fn(this: *mut IUnknown) -> ULONG>,
-///     pub Release: Option<unsafe extern "system" fn(this: *mut IUnknown) -> ULONG>,
-/// }
-/// trait IUnknownT {
-///     fn QueryInterface(&mut self, riid: REFIID, object: *mut *mut c_void) -> HRESULT;
-///     fn AddRef(&mut self) -> ULONG;
-///     fn Release(&mut self) -> ULONG;
-/// }
-/// impl IUnknownT for IUnknown {
-///     fn QueryInterface(&mut self, riid: REFIID, object: *mut *mut c_void) -> HRESULT {
-///         unsafe {
-///             (*(*self).vtable).QueryInterface.unwrap()(&mut *self, riid, object)
-///         }
-///     }
-///     fn AddRef(&mut self) -> ULONG {
-///         unsafe { (*(*self).vtable).AddRef.unwrap()(&mut *self) }
-///     }
-///     fn Release(&mut self) -> ULONG {
-///         unsafe { (*(*self).vtable).Release.unwrap()(&mut *self) }
-///     }
-/// }
-/// #[repr(C)]
-/// pub struct IDXGIDebugVtbl {
-///     pub QueryInterface: Option<unsafe extern "system" fn(this: *mut IDXGIDebug, riid: REFIID,
-///         object: *mut *mut c_void) -> HRESULT>,
-///     pub AddRef: Option<unsafe extern "system" fn(this: *mut IDXGIDebug) -> ULONG>,
-///     pub Release: Option<unsafe extern "system" fn(this: *mut IDXGIDebug) -> ULONG>,
-///     pub ReportLiveObjects: Option<unsafe extern "system" fn(this: *mut IDXGIDebug,
-///         apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT>,
-/// }
-/// trait IDXGIDebugT: IUnknownT {
-///     fn ReportLiveObjects(&mut self, apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT;
-/// }
-/// impl IDXGIDebugT for IDXGIDebug {
-///     fn ReportLiveObjects(&mut self, apiid: GUID, flags: DXGI_DEBUG_RLO_FLAGS) -> HRESULT {
-///         unsafe {
-///             (*(*self).vtable).ReportLiveObjects.unwrap()(&mut *self, apiid, flags)
-///         }
-///     }
-/// }
-/// impl IUnknownT for IDXGIDebug {
-///     fn QueryInterface(&mut self, riid: REFIID, object: *mut *mut c_void) -> HRESULT {
-///         unsafe {
-///             (*(*self).vtable).QueryInterface.unwrap()(&mut *self, riid, object)
-///         }
-///     }
-///     fn AddRef(&mut self) -> ULONG {
-///         unsafe { (*(*self).vtable).AddRef.unwrap()(&mut *self) }
-///     }
-///     fn Release(&mut self) -> ULONG {
-///         unsafe { (*(*self).vtable).Release.unwrap()(&mut *self) }
-///     }
-/// }
-/// ```
-#[macro_export]
-macro_rules! c_vtable {
-	($($table:tt)*) => {
-		c_vtable_pre!([ $($table)* ];);
-	}
 }
 
 #[cfg(test)]
 mod test {
-	struct One {
-		vtable: *mut OneTable,
-	}
-
-	struct Zero {
-		vtable: *mut ZeroTable,
-	}
-
-	struct Three {
-		vtable: *mut ThreeTable,
-	}
-
-	struct Two {
-		vtable: *mut TwoTable,
-	}
-
-	// Create the vtables using inheritance
-	#[repr(C)] c_vtable!(
-	OneTable of One, trait OneT {
-		fn one(a: u32) -> u32,
-	} with heirs [
-		ZeroTable of Zero, trait ZeroT {
-			fn zero(a: u32) -> u32,
-		}
-		TwoTable of Two, trait TwoT {
-			fn two(a: u32) -> u32,
-		} with heirs [
-			ThreeTable of Three, trait ThreeT {
-				fn three(a: u32) -> u32,
-			}
-		]
-	]);
-
-	// Current funtion pointer members:
-	// OneTable => one
-	// ZeroTable => one, zero
-	// TwoTable => one, two
-	// ThreeTable => one, two, three
-
-	unsafe extern "system" fn fone(_: *mut Three, a: u32) -> u32 { a * 1 }
-	unsafe extern "system" fn ftwo(_: *mut Three, a: u32) -> u32 { a * 2 }
-	unsafe extern "system" fn fthree(_: *mut Three, a: u32) -> u32 { a * 3 }
-
-	#[test]
-	fn three_table() {
-		let mut three = Three{
-			vtable: &mut ThreeTable{
-				one: Some(fone),
-				two: Some(ftwo),
-				three: Some(fthree) } };
-		let v = 1;
-		unsafe {
-			assert_eq!((*three.vtable).one.unwrap()(&mut three, v) +
-				(*three.vtable).three.unwrap()(&mut three, v),
-				1 + 3);
-		}
-	}
+	interface!{ One(OneTable) {
+		fn one(&mut self, a: u32) -> u32
+	}}
+	interface!{ Zero(ZeroTable): One(OneTable) {
+		fn zero(&mut self, a: u32) -> u32
+	}}
+	interface!{ Two(TwoTable): One(OneTable) {
+		fn two(&mut self, a: u32) -> u32
+	}}
+	interface!{ Three(ThreeTable): Two(TwoTable) {
+		fn three(&mut self, a: u32) -> u32
+	}}
 }
