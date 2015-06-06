@@ -329,3 +329,41 @@ pub IUnknownVtbl of IUnknown, pub trait IUnknownT {
 		fn CheckPresentDurationSupport(desired_present_duration: UINT, closest_smaller_present_duration: *mut UINT, closest_larger_present_duration: *mut UINT) -> HRESULT,
 	}
 ]);
+
+// TODO: Replace function with associated const when no longer behind feature gate
+trait QueryInterface {
+	fn iid() -> GUID;
+}
+impl QueryInterface for IDXGIAdapter { fn iid() -> GUID { IID_IDXGIAdapter } }
+impl QueryInterface for IDXGIAdapter1 { fn iid() -> GUID { IID_IDXGIAdapter1 } }
+impl QueryInterface for IDXGIAdapter2 { fn iid() -> GUID { IID_IDXGIAdapter2 } }
+impl QueryInterface for IDXGIDebug { fn iid() -> GUID { IID_IDXGIDebug } }
+impl QueryInterface for IDXGIDebug1 { fn iid() -> GUID { IID_IDXGIDebug1 } }
+impl QueryInterface for IDXGIDecodeSwapChain { fn iid() -> GUID { IID_IDXGIDecodeSwapChain } }
+impl QueryInterface for IDXGIDevice { fn iid() -> GUID { IID_IDXGIDevice } }
+impl QueryInterface for IDXGIDevice1 { fn iid() -> GUID { IID_IDXGIDevice1 } }
+impl QueryInterface for IDXGIDevice2 { fn iid() -> GUID { IID_IDXGIDevice2 } }
+impl QueryInterface for IDXGIDevice3 { fn iid() -> GUID { IID_IDXGIDevice3 } }
+impl QueryInterface for IDXGIDeviceSubObject { fn iid() -> GUID { IID_IDXGIDeviceSubObject } }
+impl QueryInterface for IDXGIDisplayControl { fn iid() -> GUID { IID_IDXGIDisplayControl } }
+impl QueryInterface for IDXGIFactory { fn iid() -> GUID { IID_IDXGIFactory } }
+impl QueryInterface for IDXGIFactory1 { fn iid() -> GUID { IID_IDXGIFactory1 } }
+impl QueryInterface for IDXGIFactory2 { fn iid() -> GUID { IID_IDXGIFactory2 } }
+impl QueryInterface for IDXGIFactory3 { fn iid() -> GUID { IID_IDXGIFactory3 } }
+impl QueryInterface for IDXGIFactoryMedia { fn iid() -> GUID { IID_IDXGIFactoryMedia } }
+impl QueryInterface for IDXGIInfoQueue { fn iid() -> GUID { IID_IDXGIInfoQueue } }
+impl QueryInterface for IDXGIKeyedMutex { fn iid() -> GUID { IID_IDXGIKeyedMutex } }
+impl QueryInterface for IDXGIObject { fn iid() -> GUID { IID_IDXGIObject } }
+impl QueryInterface for IDXGIOutput { fn iid() -> GUID { IID_IDXGIOutput } }
+impl QueryInterface for IDXGIOutput1 { fn iid() -> GUID { IID_IDXGIOutput1 } }
+impl QueryInterface for IDXGIOutput2 { fn iid() -> GUID { IID_IDXGIOutput2 } }
+impl QueryInterface for IDXGIOutputDuplication { fn iid() -> GUID { IID_IDXGIOutputDuplication } }
+impl QueryInterface for IDXGIResource { fn iid() -> GUID { IID_IDXGIResource } }
+impl QueryInterface for IDXGIResource1 { fn iid() -> GUID { IID_IDXGIResource1 } }
+impl QueryInterface for IDXGISurface { fn iid() -> GUID { IID_IDXGISurface } }
+impl QueryInterface for IDXGISurface1 { fn iid() -> GUID { IID_IDXGISurface1 } }
+impl QueryInterface for IDXGISurface2 { fn iid() -> GUID { IID_IDXGISurface2 } }
+impl QueryInterface for IDXGISwapChain { fn iid() -> GUID { IID_IDXGISwapChain } }
+impl QueryInterface for IDXGISwapChain1 { fn iid() -> GUID { IID_IDXGISwapChain1 } }
+impl QueryInterface for IDXGISwapChain2 { fn iid() -> GUID { IID_IDXGISwapChain2 } }
+impl QueryInterface for IDXGISwapChainMedia { fn iid() -> GUID { IID_IDXGISwapChainMedia } }

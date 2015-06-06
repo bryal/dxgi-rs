@@ -1,7 +1,6 @@
 [package]
-
 name = "dxgi-win"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["bryal <96.bryal@gmail.com>"]
 description = "FFI bindings to DXGI"
 repository = "https://github.com/bryal/dxgi-rs"
