@@ -11,4 +11,4 @@ license = "MIT"
 build = "build.rs"
 
 [dependencies]
-winapi = "*"
+winapi = "0.2"

@@ -1,4 +1,4 @@
-use super::{ IDXGIFactory1, IDXGIFactory1T, IUnknownT, IID_IDXGIFactory1, CreateDXGIFactory1 };
+use { IDXGIFactory1, IID_IDXGIFactory1, CreateDXGIFactory1 };
 use std::ptr;
 
 #[test]
